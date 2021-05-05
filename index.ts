@@ -1,14 +1,19 @@
 import fetch from "node-fetch";
-import { BatchCreateMemsRequest, CreateMemRequest, IMemClient, InternalBatchCreateMemsRequest, InternalCreateMemRequest, MemClientConfig } from "./types";
+
+import {
+  BatchCreateMemsRequest,
+  CreateMemRequest,
+  IMemClient,
+  InternalBatchCreateMemsRequest,
+  InternalCreateMemRequest,
+  MemClientConfig
+} from "./types";
 
 export class MemClient implements IMemClient {
   private apiKey: string;
 
-  private static ROOT_URL = "https://api.mem.ai/v0";
-
   public constructor(config: MemClientConfig) {
     this.apiKey = config.apiKey;
-    return this;
   }
 
   public async createMem(request: CreateMemRequest): Promise<void> {
@@ -43,6 +48,8 @@ export class MemClient implements IMemClient {
       },
     });
   }
+
+  private static ROOT_URL = "https://api.mem.ai/v0";
 
   private static buildUrl(path: string) {
     return `${MemClient.ROOT_URL}${path}`;
