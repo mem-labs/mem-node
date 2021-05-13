@@ -43,7 +43,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-codegen/typescript", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:1.22.0"],
             ["@graphql-codegen/typescript-operations", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:1.17.16"],
             ["@graphql-typed-document-node/core", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:3.1.0"],
-            ["@mem-labs/toolchain-configurations", "npm:0.0.5"],
+            ["@mem-labs/toolchain-configurations", "npm:0.0.7"],
             ["@types/jest", "npm:26.0.23"],
             ["@types/node", "npm:15.0.2"],
             ["@typescript-eslint/eslint-plugin", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:4.23.0"],
@@ -2608,7 +2608,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-codegen/typescript", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:1.22.0"],
             ["@graphql-codegen/typescript-operations", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:1.17.16"],
             ["@graphql-typed-document-node/core", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:3.1.0"],
-            ["@mem-labs/toolchain-configurations", "npm:0.0.5"],
+            ["@mem-labs/toolchain-configurations", "npm:0.0.7"],
             ["@types/jest", "npm:26.0.23"],
             ["@types/node", "npm:15.0.2"],
             ["@typescript-eslint/eslint-plugin", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:4.23.0"],
@@ -2629,10 +2629,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@mem-labs/toolchain-configurations", [
-        ["npm:0.0.5", {
-          "packageLocation": "./.yarn/cache/@mem-labs-toolchain-configurations-npm-0.0.5-fb98e472de-c8e798f891.zip/node_modules/@mem-labs/toolchain-configurations/",
+        ["npm:0.0.7", {
+          "packageLocation": "./.yarn/cache/@mem-labs-toolchain-configurations-npm-0.0.7-f4b061dd23-02025a54e6.zip/node_modules/@mem-labs/toolchain-configurations/",
           "packageDependencies": [
-            ["@mem-labs/toolchain-configurations", "npm:0.0.5"]
+            ["@mem-labs/toolchain-configurations", "npm:0.0.7"]
           ],
           "linkType": "HARD",
         }]

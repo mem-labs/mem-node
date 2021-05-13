@@ -27,7 +27,7 @@
     "@graphql-codegen/typed-document-node": "^1.18.5",
     "@graphql-codegen/typescript": "^1.22.0",
     "@graphql-codegen/typescript-operations": "^1.17.16",
-    "@mem-labs/toolchain-configurations": "^0.0.5",
+    "@mem-labs/toolchain-configurations": "^0.0.7",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.0.2",
     "@typescript-eslint/eslint-plugin": "^4.23.0",

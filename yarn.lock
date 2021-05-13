@@ -1663,7 +1663,7 @@ __metadata:
     "@graphql-codegen/typescript": ^1.22.0
     "@graphql-codegen/typescript-operations": ^1.17.16
     "@graphql-typed-document-node/core": ^3.1.0
-    "@mem-labs/toolchain-configurations": ^0.0.5
+    "@mem-labs/toolchain-configurations": ^0.0.7
     "@types/jest": ^26.0.23
     "@types/node": ^15.0.2
     "@typescript-eslint/eslint-plugin": ^4.23.0
@@ -1682,10 +1682,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mem-labs/toolchain-configurations@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "@mem-labs/toolchain-configurations@npm:0.0.5"
-  checksum: c8e798f89141ca548befe85ec34f1b14570a666551a6a6d51397393e5f677934679cc28910db170ac6c6530b1dc92888a961d8c32fe45bde0e9f1ce86d4b4ea9
+"@mem-labs/toolchain-configurations@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "@mem-labs/toolchain-configurations@npm:0.0.7"
+  checksum: 02025a54e6ec08495eea0dcd33d62e560c0935900a979a1bddaefb5990aee9649dc1e2d772dd3c9caa5f7d08a14b3260591115e85300516ab4a7aacb0bee4dea
   languageName: node
   linkType: hard
 

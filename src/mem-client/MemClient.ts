@@ -4,7 +4,10 @@ import { JsonObject } from "type-fest";
 import { defaultMemApiEndpoint } from "./constants";
 import { GraphQLClient } from "graphql-request";
 import { TypedDocumentNode } from "@graphql-typed-document-node/core";
-import { HealthCheckDocument, CreateMemDocument } from "../api/__codegen__/types";
+import {
+  HealthCheckDocument,
+  CreateMemDocument,
+} from "../api/__codegen__/types";
 
 export class MemClient {
   private apiClient: GraphQLClient;
@@ -23,7 +26,10 @@ export class MemClient {
       level: logLevel,
     });
 
-    const defaultHeaders = { "Content-Type": "application/json", Authorization: apiKey };
+    const defaultHeaders = {
+      "Content-Type": "application/json",
+      Authorization: apiKey,
+    };
 
     console.log(defaultHeaders);
 
@@ -41,7 +47,10 @@ export class MemClient {
   ) {
     this.logger.debug(`[graphqlRequest()] Started.`, document, variables);
 
-    const data = await this.apiClient.request<TResult, TVariables>(document, variables);
+    const data = await this.apiClient.request<TResult, TVariables>(
+      document,
+      variables
+    );
 
     console.log("WOW!", data);
 
@@ -54,7 +63,9 @@ export class MemClient {
 
   // GqCreateMemMutationVariables
   async createMem() {
-    const a = await this.graphqlRequest(CreateMemDocument, { content: "Hello World!!!" });
+    const a = await this.graphqlRequest(CreateMemDocument, {
+      content: "Hello World!!!",
+    });
 
     return a;
   }

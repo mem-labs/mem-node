@@ -1,17 +1,10 @@
-/**
- * Similar to the base options defined in `src/eslint/...`
- */
+const { eslintSettings } = require("@mem-labs/toolchain-configurations");
+
 module.exports = {
-  /** All true - we defer to TS for the proper checks. */
-  env: {
-    browser: true,
-    node: true,
-    jest: true,
-    es6: true,
-  },
+  env: eslintSettings.baseEnv,
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    sourceType: "module",
+    ...eslintSettings.plugins.typescript.parserOptions,
   },
   plugins: ["@typescript-eslint", "prettier"],
   extends: [
@@ -20,27 +13,11 @@ module.exports = {
     "plugin:prettier/recommended",
   ],
   rules: {
-    "no-underscore-dangle": "off",
-    "arrow-body-style": ["error", "as-needed"],
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-empty-interface": "off",
-    /** Replacing the standard rule. */
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    ...eslintSettings.baseRules,
+    ...eslintSettings.plugins.typescript.baseRules,
   },
   overrides: [
-    {
-      files: ["*.d.ts"],
-      rules: {
-        "no-var": "off",
-      },
-    },
-    {
-      files: ["*.js"],
-      rules: {
-        "@typescript-eslint/no-var-requires": "off",
-      },
-    },
+    ...eslintSettings.baseOverrides,
+    ...eslintSettings.plugins.typescript.jsOverrides,
   ],
 };
