@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+echo "==> Running Type-Checking..."
+
+yarn tsc --noEmit
+
+echo "==> Type-Checking Completed!"

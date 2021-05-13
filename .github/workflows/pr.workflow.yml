@@ -1,0 +1,38 @@
+name: "pr"
+
+on:
+  pull_request:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  quality_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: script/install
+
+      - name: Run Linting
+        run: script/lint
+
+      - name: Run Type-Checking
+        run: script/type_check
+  
+  run_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: script/install
+
+      - name: Run Tests
+        run: script/test

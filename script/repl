@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+script/build
+
+echo "==> Launching REPL..."
+
+yarn node --inspect --experimental-repl-await dist/utils/repl/entry.js
