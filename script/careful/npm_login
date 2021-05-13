@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+echo "==> Logging into NPM..."
+
+# You'll need to be a member of the "mem-labs" npm organization.
+# https://www.npmjs.com/settings/mem-labs
+yarn npm login --scope=mem-labs

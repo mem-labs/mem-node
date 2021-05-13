@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+echo "==> Clearing /dist..."
+
+rm -rf ./dist
+
+echo "==> /dist Cleared!"
