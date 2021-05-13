@@ -23,7 +23,9 @@ export class MemClient {
       level: logLevel,
     });
 
-    const defaultHeaders = { "Content-Type": "application/json", Authentication: apiKey };
+    const defaultHeaders = { "Content-Type": "application/json", Authorization: apiKey };
+
+    console.log(defaultHeaders);
 
     this.apiClient = new GraphQLClient(apiEndpoint, {
       headers: defaultHeaders,
@@ -34,7 +36,7 @@ export class MemClient {
 
   private async graphqlRequest<TVariables extends JsonObject, TResult>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    document: TypedDocumentNode<Record<string, any>, TVariables>,
+    document: TypedDocumentNode<TResult, TVariables>,
     variables?: TVariables
   ) {
     this.logger.debug(`[graphqlRequest()] Started.`, document, variables);
@@ -46,12 +48,14 @@ export class MemClient {
     return data;
   }
 
-  async healthCheck(): Promise<void> {
+  async healthCheck() {
     return await this.graphqlRequest(HealthCheckDocument);
   }
 
   // GqCreateMemMutationVariables
-  async createMem(): Promise<void> {
+  async createMem() {
     const a = await this.graphqlRequest(CreateMemDocument, { content: "Hello World!!!" });
+
+    return a;
   }
 }
