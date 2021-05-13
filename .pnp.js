@@ -56,6 +56,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest", "npm:26.6.3"],
             ["jest-extended", "npm:0.11.5"],
             ["prettier", "npm:2.3.0"],
+            ["ts-custom-error", "npm:3.2.0"],
             ["ts-jest", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:26.5.6"],
             ["type-fest", "npm:1.1.1"],
             ["typescript", "patch:typescript@npm%3A4.2.4#builtin<compat/typescript>::version=4.2.4&hash=a45b0e"]
@@ -2621,6 +2622,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest", "npm:26.6.3"],
             ["jest-extended", "npm:0.11.5"],
             ["prettier", "npm:2.3.0"],
+            ["ts-custom-error", "npm:3.2.0"],
             ["ts-jest", "virtual:4ff268222c9237186e5d8723787fcb8a3fe86332aa3d4cff376473bdb6d9c79fbefbdb8f5cc1b2dc7cae95d230b8beb9ddcc5faa2183610eb281cf60ab39605f#npm:26.5.6"],
             ["type-fest", "npm:1.1.1"],
             ["typescript", "patch:typescript@npm%3A4.2.4#builtin<compat/typescript>::version=4.2.4&hash=a45b0e"]
@@ -11019,6 +11021,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["tr46", "npm:2.0.2"],
             ["punycode", "npm:2.1.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["ts-custom-error", [
+        ["npm:3.2.0", {
+          "packageLocation": "./.yarn/cache/ts-custom-error-npm-3.2.0-7ef8105f26-0e865d875c.zip/node_modules/ts-custom-error/",
+          "packageDependencies": [
+            ["ts-custom-error", "npm:3.2.0"]
           ],
           "linkType": "HARD",
         }]

@@ -1,37 +1,32 @@
 import { Logger } from "../utils/logger";
-import { LogLevel } from "../utils/logger/types";
 import { JsonObject } from "type-fest";
 import { defaultMemApiEndpoint } from "./constants";
 import { GraphQLClient } from "graphql-request";
 import { TypedDocumentNode } from "@graphql-typed-document-node/core";
-import {
-  HealthCheckDocument,
-  CreateMemDocument,
-} from "../api/__codegen__/types";
+import { ClientInitializationError } from "../utils/errors/base";
+import { MemClientConfig } from "./types";
+import { memClientCreateMem } from "./methods/createMem";
+import { memClientHealthCheck } from "./methods/healthCheck";
 
 export class MemClient {
   private apiClient: GraphQLClient;
   private logger: Logger;
 
-  constructor({
-    apiEndpoint = defaultMemApiEndpoint,
-    apiKey,
-    logLevel,
-  }: {
-    apiEndpoint: string;
-    apiKey: string;
-    logLevel?: LogLevel;
-  }) {
+  constructor({ apiEndpoint = defaultMemApiEndpoint, apiKey, logLevel }: MemClientConfig) {
     this.logger = new Logger({
       level: logLevel,
     });
+
+    if (!apiKey) {
+      throw new ClientInitializationError({
+        message: "An `apiKey` must be provided when initializing the MemClient.",
+      });
+    }
 
     const defaultHeaders = {
       "Content-Type": "application/json",
       Authorization: apiKey,
     };
-
-    console.log(defaultHeaders);
 
     this.apiClient = new GraphQLClient(apiEndpoint, {
       headers: defaultHeaders,
@@ -40,33 +35,26 @@ export class MemClient {
     this.logger.debug(`[constructor()] MemClient Initialized.`);
   }
 
-  private async graphqlRequest<TVariables extends JsonObject, TResult>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async graphqlRequest<TVariables extends JsonObject, TResult>(
     document: TypedDocumentNode<TResult, TVariables>,
     variables?: TVariables
   ) {
     this.logger.debug(`[graphqlRequest()] Started.`, document, variables);
 
-    const data = await this.apiClient.request<TResult, TVariables>(
-      document,
-      variables
-    );
+    try {
+      const data = await this.apiClient.request<TResult, TVariables>(document, variables);
 
-    console.log("WOW!", data);
+      this.logger.debug(`[graphqlRequest()] Completed.`);
 
-    return data;
+      return data;
+    } catch (err) {
+      this.logger.debug(`[graphqlRequest()] An error ocurred.`, err);
+
+      throw err;
+    }
   }
 
-  async healthCheck() {
-    return await this.graphqlRequest(HealthCheckDocument);
-  }
+  healthCheck = memClientHealthCheck({ memClient: this });
 
-  // GqCreateMemMutationVariables
-  async createMem() {
-    const a = await this.graphqlRequest(CreateMemDocument, {
-      content: "Hello World!!!",
-    });
-
-    return a;
-  }
+  createMem = memClientCreateMem({ memClient: this });
 }

@@ -19,7 +19,11 @@ generates:
     config:
       typesPrefix: "Gq"
       maybeValue: T
-      avoidOptionals: false
+      avoidOptionals:
+        field: true
+        inputValue: true
+        object: false
+        defaultValue: true
 
 hooks:
   afterAllFileWrite:
