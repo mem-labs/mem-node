@@ -3,6 +3,6 @@ set -e
 
 echo "==> Running GraphQL Code Generation..."
 
-yarn graphql-codegen --config ./config/codegen/config.yml "$@"
+yarn graphql-codegen --config ./config/codegen/config.yaml "$@"
 
 echo "==> GraphQL Code Generation Completed!"

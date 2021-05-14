@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://mem.ai" target="_blank" rel="noopener noreferrer">
-    <img width="64" src="https://raw.githubusercontent.com/mem-labs/mem-node/master/public/logo.svg" alt="Mem logo">
+    <img width="64" src="https://raw.githubusercontent.com/mem-labs/mem-node/main/public/logo.svg" alt="Mem logo">
   </a> 
 </p>
 <h1 align="center">
@@ -10,11 +10,11 @@
   The Mem Node client provides convenient access to the Mem API from applications written in server-side JavaScript.
 </p>
 <p align="center">
-  <a href="https://github.com/mem-labs/mem-node/blob/master/LICENSE">
+  <a href="https://github.com/mem-labs/mem-node/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-ISC-blue.svg" alt="mem-node is released under the ISC license." />
   </a>
   <a href="https://github.com/mem-labs/mem-node/actions/workflows/merge.yaml">
-    <img src="https://github.com/mem-labs/mem-node/actions/workflows/merge.yaml/badge.svg" alt="Main branch merge - github action status." />
+    <img src="https://github.com/mem-labs/mem-node/actions/workflows/merge.workflow.yaml/badge.svg" alt="Main branch merge - github action status." />
   </a>
 </p>
 
