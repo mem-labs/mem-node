@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://mem.ai" target="_blank" rel="noopener noreferrer">
-    <img width="64" src="https://raw.githubusercontent.com/mem-labs/mem-node/main/public/logo.svg" alt="Mem logo">
+    <img width="64" src="https://github.com/mem-labs/mem-node/blob/main/public/logo.svg" alt="Mem logo">
   </a> 
 </p>
 <h1 align="center">
