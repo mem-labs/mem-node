@@ -1,4 +1,5 @@
 <p align="center">
+  <br />
   <a href="https://mem.ai" target="_blank" rel="noopener noreferrer">
     <img width="64" src="https://github.com/mem-labs/mem-node/blob/main/public/logo.svg" alt="Mem logo">
   </a> 
@@ -7,7 +8,7 @@
   Mem Node.js Client
 </h1>
 <p align="center">
-  The Mem Node client provides convenient access to the Mem API from applications written in server-side JavaScript.
+  The Mem Client provides convenient access to the Mem API from applications written in server-side JavaScript.
 </p>
 <p align="center">
   <a href="https://github.com/mem-labs/mem-node/blob/main/LICENSE">
