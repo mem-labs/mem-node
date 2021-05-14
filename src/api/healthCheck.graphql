@@ -1,0 +1,5 @@
+  query HealthCheck {
+    healthCheckDetails {
+      apiStatus
+    }
+  }
