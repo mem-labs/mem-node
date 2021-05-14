@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-echo "==> Installing Dependencies..."
-
-yarn install "$@"
-
-echo "==> Installation Completed!"

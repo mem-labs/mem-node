@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-echo "==> Running Tests..."
-
-yarn jest "$@"
-
-echo "==> Testing Completed!"

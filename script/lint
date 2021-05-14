@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-echo "==> Running ESLint..."
-
-yarn eslint src "$@"
-
-echo "==> Linting Completed!"

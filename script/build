@@ -1,9 +1,0 @@
-#!/bin/bash
-set -e
-
-echo "==> Building Package..."
-
-script/utils/clear_dist
-script/utils/tsc
-
-echo "==> Package Built!"

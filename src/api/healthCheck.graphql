@@ -1,5 +1,0 @@
-  query HealthCheck {
-    healthCheckDetails {
-      apiStatus
-    }
-  }

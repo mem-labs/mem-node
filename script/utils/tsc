@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-echo "==> Running TypeScript Compilation..."
-
-yarn tsc
-
-echo "==> TypeScript Compilation Completed!"

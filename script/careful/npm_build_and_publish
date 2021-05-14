@@ -1,5 +1,0 @@
-#!/bin/bash
-set -e
-
-script/build
-script/careful/utils/npm_publish

@@ -1,8 +1,0 @@
-#!/bin/bash
-set -e
-
-echo "==> Publishing Package..."
-
-# Publishes the package to NPM.
-# You'll need to be logged in with `script/careful/npm_login` for this to work.
-yarn npm publish --access public
