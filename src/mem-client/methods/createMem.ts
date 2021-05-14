@@ -6,7 +6,7 @@ export const memClientCreateMem =
   /**
    * Creates a new mem, then returns the some details about the created mem.
    */
-  async ({ variables }: { variables: GqCreateMemMutationVariables }) => {
+  async (variables: GqCreateMemMutationVariables) => {
     const result = await memClient.graphqlRequest(CreateMemDocument, {
       ...variables,
     });
