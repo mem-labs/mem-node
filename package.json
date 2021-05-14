@@ -2,7 +2,7 @@
   "name": "@mem-labs/mem-node",
   "description": "Official Node.js client for the Mem API.",
   "author": "Mem Labs, Inc. <engineering@mem.ai>",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/entry.js",
   "types": "dist/entry.d.ts",
   "license": "ISC",
