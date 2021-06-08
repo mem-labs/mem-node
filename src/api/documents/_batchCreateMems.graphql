@@ -1,0 +1,24 @@
+  mutation BatchCreateMems(
+    $content: String!
+    $format: MemFormat
+    $skipInbox: Boolean
+    $createdAt: DateTime
+    $snoozeUntil: DateTime
+  ) {
+    createMem(
+      input: {
+        content: $content
+        format: $format
+        skipInbox: $skipInbox
+        createdAt: $createdAt
+        snoozeUntil: $snoozeUntil
+      }
+    ) {
+      mem {
+        id
+        content {
+          plaintext
+        }
+      }
+    }
+  }
