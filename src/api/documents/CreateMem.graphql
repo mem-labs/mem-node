@@ -1,0 +1,12 @@
+  mutation CreateMem(
+    $input: CreateMemInput!
+  ) {
+    createMem(
+      input: $input
+    ) {
+      success
+      mem {
+        id
+      }
+    }
+  }

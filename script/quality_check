@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+script/codegen
+script/lint
+script/type_check
+script/test
+script/build

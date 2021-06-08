@@ -1,0 +1,12 @@
+  mutation BatchCreateMems(
+    $inputs: [CreateMemInput!]!
+  ) {
+    batchCreateMems(
+      inputs: $inputs
+    ) {
+      success
+      mem {
+        id
+      }
+    }
+  }

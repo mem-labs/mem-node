@@ -1,11 +1,28 @@
+const path = require("path");
+
+const { jestSettings } = require("@mem-labs/toolchain-configurations");
+
+const {
+  base,
+  utils: { rootAddressModuleNameMapper },
+  plugins: { tsJest, jestExtended },
+} = jestSettings;
+
+const testSetupFile = path.resolve(
+  process.cwd(),
+  "src",
+  "utils",
+  "testing",
+  "afterEnvSetupFile.ts"
+);
+
 module.exports = {
-  rootDir: "./src",
+  ...base,
   transform: {
-    ".(ts|tsx)": "ts-jest",
+    ...tsJest.transform,
   },
-  globals: {
-    "ts-jest": {},
+  setupFilesAfterEnv: [...jestExtended.setupFilesAfterEnv, testSetupFile],
+  moduleNameMapper: {
+    ...rootAddressModuleNameMapper,
   },
-  moduleFileExtensions: ["js", "ts"],
-  setupFilesAfterEnv: ["jest-extended"],
 };

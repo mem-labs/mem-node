@@ -18,12 +18,13 @@ generates:
       - typed-document-node
     config:
       typesPrefix: "Gq"
-      maybeValue: T
-      avoidOptionals:
-        field: true
-        inputValue: true
-        object: false
-        defaultValue: true
+      avoidOptionals: true
+      dedupeOperationSuffix: true
+      strictScalars: true
+      scalars:
+        Uuid: "../../utils/graphql/types#UuidScalar"
+        Cursor: "../../utils/graphql/types#CursorScalar"
+        DateTime: "../../utils/graphql/types#DateTimeScalar"
 
 hooks:
   afterAllFileWrite:

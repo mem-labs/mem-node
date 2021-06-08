@@ -6,7 +6,11 @@
  */
 
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
-export type Maybe<T> = T;
+
+import { CursorScalar } from "../../utils/graphql/types";
+import { DateTimeScalar } from "../../utils/graphql/types";
+import { UuidScalar } from "../../utils/graphql/types";
+export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -18,11 +22,11 @@ export type Scalars = {
   Int: number;
   Float: number;
   /** Cursor Scalar Type */
-  Cursor: any;
+  Cursor: CursorScalar;
   /** DateTime Scalar Type */
-  DateTime: any;
+  DateTime: DateTimeScalar;
   /** Uuid Scalar Type */
-  Uuid: any;
+  Uuid: UuidScalar;
 };
 
 /** An Account. */
@@ -38,11 +42,11 @@ export type GqAccount = GqNode & {
 
 /** An Account. */
 export type GqAccountAccountApiKeysArgs = {
-  after?: Maybe<Scalars["Cursor"]>;
-  before?: Maybe<Scalars["Cursor"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  filterBy?: Maybe<GqAccountAccountApiKeysFilters>;
+  after: Maybe<Scalars["Cursor"]>;
+  before: Maybe<Scalars["Cursor"]>;
+  first: Maybe<Scalars["Int"]>;
+  last: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqAccountAccountApiKeysFilters>;
 };
 
 export type GqAccountAccountApiKeysFilters = {
@@ -57,6 +61,10 @@ export type GqAccountApiKey = GqNode & {
   id: Scalars["Uuid"];
   /** The label of the token. */
   label: Scalars["String"];
+  /** Some details about the token (what it is used for, where the token is stored, ...). */
+  details: Maybe<Scalars["String"]>;
+  /** The time at which the API Key was created. */
+  createdAt: Scalars["DateTime"];
   /** The account that this API Key belongs to. */
   account: GqAccount;
 };
@@ -102,7 +110,7 @@ export type GqAccountEdge = {
   /** A cursor for use in pagination. */
   cursor: Scalars["Cursor"];
   /** The item at the end of the edge. */
-  node: Maybe<GqAccount>;
+  node: GqAccount;
 };
 
 export type GqCreateAccountApiKeyInput = {
@@ -112,19 +120,23 @@ export type GqCreateAccountApiKeyInput = {
   token: Maybe<Scalars["Uuid"]>;
   /** The label for the API key. */
   label: Scalars["String"];
+  /** Some details about the API key (what it is used for, where the token is stored, ...). */
+  details: Maybe<Scalars["String"]>;
 };
 
 export type GqCreateAccountApiKeyPayload = {
   __typename?: "CreateAccountApiKeyPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
   /** The API key that was created. */
   accountApiKey: GqAccountApiKey;
   /** The token associated with the newly-created API Key. */
   token: Scalars["Uuid"];
-  /** Whether the operation was successful. */
-  success: Scalars["Boolean"];
 };
 
 export type GqCreateMemInput = {
+  /** The identifier for the Mem. If not provided, the server will generate one. */
+  memId: Maybe<Scalars["Uuid"]>;
   /**
    * The initial contents of the mem.
    * Titles and tags are automatically parsed from the content.
@@ -132,32 +144,28 @@ export type GqCreateMemInput = {
   content: Scalars["String"];
   /**
    * Specifies the format of the input.
-   * Defaults to "plaintext".
+   * Defaults to "markdown".
    */
   format: Maybe<GqMemFormat>;
-  /**
-   * The newly created mem will - by default - appear in the user's inbox.
-   * Pass skipInbox=true to automatically remove it from the inbox.
-   */
-  skipInbox: Maybe<Scalars["Boolean"]>;
+  /** Specify whether the mem should be automatically marked as "read". */
+  isRead: Maybe<Scalars["Boolean"]>;
+  /** Specify whether the mem should be automatically marked as "archived". */
+  isArchived: Maybe<Scalars["Boolean"]>;
+  /** Specify a timestamp at which the mem will "resurface". */
+  scheduledFor: Maybe<Scalars["DateTime"]>;
   /**
    * Defaults to the current time.
    * Pass an explicit time to override the default.
    */
   createdAt: Maybe<Scalars["DateTime"]>;
-  /**
-   * Specify a timestamp at which the mem will "resurface".
-   * (Similar to the "Snooze" action in the product UI).
-   */
-  snoozeUntil: Maybe<Scalars["DateTime"]>;
 };
 
 export type GqCreateMemPayload = {
   __typename?: "CreateMemPayload";
-  /** The Mem which was created. */
-  mem: GqMem;
   /** Whether the operation was successful. */
   success: Scalars["Boolean"];
+  /** The Mem which was created. */
+  mem: GqMem;
 };
 
 /** Details about the server's health. */
@@ -169,15 +177,8 @@ export type GqHealthCheckDetails = {
   postgresStatus: Scalars["Boolean"];
   /** Queries the firestore database to ensure it is working. */
   firestoreStatus: Scalars["Boolean"];
-  /** Details regarding the server's last build/deployment. */
-  buildStatus: GqHealthCheckDetailsBuildStatus;
-};
-
-/** Details regarding the server's last build/deployment. */
-export type GqHealthCheckDetailsBuildStatus = {
-  __typename?: "HealthCheckDetailsBuildStatus";
-  /** Time that the server was last built/deployed. */
-  builtAt: Scalars["DateTime"];
+  /** Details regarding the server's build/deployment/environment/.. */
+  serverInfo: GqServerInfo;
 };
 
 /** A mem - our standard Rich-Text-Document entity. */
@@ -185,40 +186,33 @@ export type GqMem = GqNode & {
   __typename?: "Mem";
   /** The unique identifier of the entity. */
   id: Scalars["Uuid"];
-  /** The title of the mem. */
-  title: Scalars["String"];
-  /** The content of the mem, available in different formats. */
-  content: GqMemContent;
-  /** The time the mem was created at. */
-  createdAt: Scalars["DateTime"];
-};
-
-export type GqMemContent = {
-  __typename?: "MemContent";
-  /** A plaintext-formatted version of the mem content. */
-  plaintext: Scalars["String"];
 };
 
 export enum GqMemFormat {
-  Plaintext = "PLAINTEXT",
   Markdown = "MARKDOWN",
-  Html = "HTML",
-  RichTextDelta = "RICH_TEXT_DELTA",
 }
 
 export type GqMutation = {
   __typename?: "Mutation";
   _empty: Maybe<Scalars["String"]>;
   /** Create a new Account API key. */
-  createAccountApiKey: Maybe<GqCreateAccountApiKeyPayload>;
+  createAccountApiKey: GqCreateAccountApiKeyPayload;
+  /** Updates an existing Account API key's details. */
+  updateAccountApiKeyDetails: GqUpdateAccountApiKeyDetailsPayload;
   /** Revoke an existing Account API Key. */
-  revokeAccountApiKey: Maybe<GqRevokeAccountApiKeyPayload>;
+  revokeAccountApiKey: GqRevokeAccountApiKeyPayload;
   /** Create a new Mem. */
-  createMem: Maybe<GqCreateMemPayload>;
+  createMem: GqCreateMemPayload;
+  /** Create a new Mem. */
+  batchCreateMems: Array<GqCreateMemPayload>;
 };
 
 export type GqMutationCreateAccountApiKeyArgs = {
   input: GqCreateAccountApiKeyInput;
+};
+
+export type GqMutationUpdateAccountApiKeyDetailsArgs = {
+  input: GqUpdateAccountApiKeyDetailsInput;
 };
 
 export type GqMutationRevokeAccountApiKeyArgs = {
@@ -227,6 +221,10 @@ export type GqMutationRevokeAccountApiKeyArgs = {
 
 export type GqMutationCreateMemArgs = {
   input: GqCreateMemInput;
+};
+
+export type GqMutationBatchCreateMemsArgs = {
+  inputs: Array<GqCreateMemInput>;
 };
 
 /** An object with a universal ID (globally-unique). */
@@ -251,6 +249,8 @@ export type GqPageInfo = {
 export type GqQuery = {
   __typename?: "Query";
   _empty: Maybe<Scalars["String"]>;
+  /** Get an Account API Key by id. */
+  getAccountApiKey: GqAccountApiKey;
   /** Search for account api keys. */
   searchAccountApiKeys: GqAccountApiKeyConnection;
   /**
@@ -258,26 +258,42 @@ export type GqQuery = {
    * If there is not a currently authenticated account, this raises an error.
    */
   getCurrentAccount: GqAccount;
+  /** Get an Account by id. */
+  getAccount: GqAccount;
   /** Search for account api keys. */
   searchAccounts: GqAccountConnection;
   /** Server health-check details. */
   healthCheckDetails: GqHealthCheckDetails;
+  /** Get a Mem by id. */
+  getMem: GqMem;
+};
+
+export type GqQueryGetAccountApiKeyArgs = {
+  accountApiKeyId: Scalars["Uuid"];
 };
 
 export type GqQuerySearchAccountApiKeysArgs = {
-  after?: Maybe<Scalars["Cursor"]>;
-  before?: Maybe<Scalars["Cursor"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  filterBy?: Maybe<GqSearchAccountApiKeysFilters>;
+  after: Maybe<Scalars["Cursor"]>;
+  before: Maybe<Scalars["Cursor"]>;
+  first: Maybe<Scalars["Int"]>;
+  last: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqSearchAccountApiKeysFilters>;
+};
+
+export type GqQueryGetAccountArgs = {
+  accountId: Scalars["Uuid"];
 };
 
 export type GqQuerySearchAccountsArgs = {
-  after?: Maybe<Scalars["Cursor"]>;
-  before?: Maybe<Scalars["Cursor"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  filterBy?: Maybe<GqSearchAccountsFilters>;
+  after: Maybe<Scalars["Cursor"]>;
+  before: Maybe<Scalars["Cursor"]>;
+  first: Maybe<Scalars["Int"]>;
+  last: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqSearchAccountsFilters>;
+};
+
+export type GqQueryGetMemArgs = {
+  memId: Scalars["Uuid"];
 };
 
 export type GqRevokeAccountApiKeyInput = {
@@ -301,27 +317,70 @@ export type GqSearchAccountsFilters = {
   includeArchived: Maybe<Scalars["Boolean"]>;
 };
 
+/** Details regarding the server's build/deployment/environment/... */
+export type GqServerInfo = {
+  __typename?: "ServerInfo";
+  /** Time that the server was last built/deployed. */
+  builtAt: Scalars["DateTime"];
+  /** The name of the deployed service. */
+  serviceName: Scalars["String"];
+  /**
+   * An identifier which uniquely represents this build.
+   * (A new identifier is generated every time the app is built.)
+   */
+  buildIdentifier: Scalars["Uuid"];
+  /**
+   * An identifier which uniquely represents this server instance.
+   * (A new identifier is generated every time the server boots.)
+   */
+  instanceIdentifier: Scalars["Uuid"];
+  /**
+   * An identifier which uniquely represents this API request.
+   * (A new identifier is generated every time a request is made.)
+   */
+  requestIdentifier: Scalars["Uuid"];
+};
+
 export type GqSubscription = {
   __typename?: "Subscription";
   _empty: Maybe<Scalars["String"]>;
 };
 
+export type GqUpdateAccountApiKeyDetailsInput = {
+  /** The identifier for the Account API Key. */
+  accountApiKeyId: Scalars["Uuid"];
+  /** Some details about the API key (what it is used for, where the token is stored, ...). */
+  details: Maybe<Scalars["String"]>;
+};
+
+export type GqUpdateAccountApiKeyDetailsPayload = {
+  __typename?: "UpdateAccountApiKeyDetailsPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The API key that was updated. */
+  accountApiKey: GqAccountApiKey;
+};
+
+export type GqBatchCreateMemsMutationVariables = Exact<{
+  inputs: Array<GqCreateMemInput> | GqCreateMemInput;
+}>;
+
+export type GqBatchCreateMemsMutation = { __typename?: "Mutation" } & {
+  batchCreateMems: Array<
+    { __typename?: "CreateMemPayload" } & Pick<GqCreateMemPayload, "success"> & {
+        mem: { __typename?: "Mem" } & Pick<GqMem, "id">;
+      }
+  >;
+};
+
 export type GqCreateMemMutationVariables = Exact<{
-  content: Scalars["String"];
-  format?: Maybe<GqMemFormat>;
-  skipInbox?: Maybe<Scalars["Boolean"]>;
-  createdAt?: Maybe<Scalars["DateTime"]>;
-  snoozeUntil?: Maybe<Scalars["DateTime"]>;
+  input: GqCreateMemInput;
 }>;
 
 export type GqCreateMemMutation = { __typename?: "Mutation" } & {
-  createMem: Maybe<
-    { __typename?: "CreateMemPayload" } & {
-      mem: { __typename?: "Mem" } & Pick<GqMem, "id"> & {
-          content: { __typename?: "MemContent" } & Pick<GqMemContent, "plaintext">;
-        };
-    }
-  >;
+  createMem: { __typename?: "CreateMemPayload" } & Pick<GqCreateMemPayload, "success"> & {
+      mem: { __typename?: "Mem" } & Pick<GqMem, "id">;
+    };
 };
 
 export type GqHealthCheckQueryVariables = Exact<{ [key: string]: never }>;
@@ -333,7 +392,63 @@ export type GqHealthCheckQuery = { __typename?: "Query" } & {
   >;
 };
 
-export const CreateMemDocument: DocumentNode<GqCreateMemMutation, GqCreateMemMutationVariables> = {
+export const BatchCreateMemsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "BatchCreateMems" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "inputs" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: { kind: "NamedType", name: { kind: "Name", value: "CreateMemInput" } },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "batchCreateMems" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "inputs" },
+                value: { kind: "Variable", name: { kind: "Name", value: "inputs" } },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "mem" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [{ kind: "Field", name: { kind: "Name", value: "id" } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GqBatchCreateMemsMutation, GqBatchCreateMemsMutationVariables>;
+export const CreateMemDocument = {
   kind: "Document",
   definitions: [
     {
@@ -343,31 +458,11 @@ export const CreateMemDocument: DocumentNode<GqCreateMemMutation, GqCreateMemMut
       variableDefinitions: [
         {
           kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "content" } },
+          variable: { kind: "Variable", name: { kind: "Name", value: "input" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+            type: { kind: "NamedType", name: { kind: "Name", value: "CreateMemInput" } },
           },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "format" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "MemFormat" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "skipInbox" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "Boolean" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "createdAt" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "DateTime" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "snoozeUntil" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "DateTime" } },
         },
       ],
       selectionSet: {
@@ -380,59 +475,19 @@ export const CreateMemDocument: DocumentNode<GqCreateMemMutation, GqCreateMemMut
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "ObjectValue",
-                  fields: [
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "content" },
-                      value: { kind: "Variable", name: { kind: "Name", value: "content" } },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "format" },
-                      value: { kind: "Variable", name: { kind: "Name", value: "format" } },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "skipInbox" },
-                      value: { kind: "Variable", name: { kind: "Name", value: "skipInbox" } },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "createdAt" },
-                      value: { kind: "Variable", name: { kind: "Name", value: "createdAt" } },
-                    },
-                    {
-                      kind: "ObjectField",
-                      name: { kind: "Name", value: "snoozeUntil" },
-                      value: { kind: "Variable", name: { kind: "Name", value: "snoozeUntil" } },
-                    },
-                  ],
-                },
+                value: { kind: "Variable", name: { kind: "Name", value: "input" } },
               },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "mem" },
                   selectionSet: {
                     kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "content" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            { kind: "Field", name: { kind: "Name", value: "plaintext" } },
-                          ],
-                        },
-                      },
-                    ],
+                    selections: [{ kind: "Field", name: { kind: "Name", value: "id" } }],
                   },
                 },
               ],
@@ -442,8 +497,8 @@ export const CreateMemDocument: DocumentNode<GqCreateMemMutation, GqCreateMemMut
       },
     },
   ],
-};
-export const HealthCheckDocument: DocumentNode<GqHealthCheckQuery, GqHealthCheckQueryVariables> = {
+} as unknown as DocumentNode<GqCreateMemMutation, GqCreateMemMutationVariables>;
+export const HealthCheckDocument = {
   kind: "Document",
   definitions: [
     {
@@ -465,4 +520,4 @@ export const HealthCheckDocument: DocumentNode<GqHealthCheckQuery, GqHealthCheck
       },
     },
   ],
-};
+} as unknown as DocumentNode<GqHealthCheckQuery, GqHealthCheckQueryVariables>;

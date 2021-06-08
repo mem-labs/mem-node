@@ -1,12 +1,15 @@
-import { Logger } from "../utils/logger";
-import { JsonObject } from "type-fest";
-import { defaultMemApiEndpoint } from "./constants";
-import { GraphQLClient } from "graphql-request";
 import { TypedDocumentNode } from "@graphql-typed-document-node/core";
+import { GraphQLClient } from "graphql-request";
+import { JsonObject } from "type-fest";
+
 import { ClientInitializationError } from "../utils/errors/base";
-import { MemClientConfig } from "./types";
+import { Logger } from "../utils/logger";
+
+import { defaultMemApiEndpoint } from "./constants";
+import { memClientBatchCreateMems } from "./methods/batchCreateMems";
 import { memClientCreateMem } from "./methods/createMem";
 import { memClientHealthCheck } from "./methods/healthCheck";
+import { MemClientConfig } from "./types";
 
 export class MemClient {
   private apiClient: GraphQLClient;
@@ -57,4 +60,6 @@ export class MemClient {
   healthCheck = memClientHealthCheck({ memClient: this });
 
   createMem = memClientCreateMem({ memClient: this });
+
+  batchCreateMems = memClientBatchCreateMems({ memClient: this });
 }

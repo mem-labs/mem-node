@@ -56,3 +56,15 @@ await memClient.createMem({
   content: "Hello world."
 });
 ```
+
+<br />
+
+## Contributing
+
+Read our [CONTRIBUTING.md](./CONTRIBUTING.md) to learn about our development process, and how to build and test your changes to the Mem Node.js Client.
+
+<br />
+
+## License
+
+The Mem Node.js Client is [ISC licensed](./LICENSE).
