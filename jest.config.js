@@ -8,7 +8,13 @@ const {
   plugins: { tsJest, jestExtended },
 } = jestSettings;
 
-const testSetupFile = path.resolve(process.cwd(), "src", "utils", "testing", "setup.ts");
+const testSetupFile = path.resolve(
+  process.cwd(),
+  "src",
+  "utils",
+  "testing",
+  "afterEnvSetupFile.ts"
+);
 
 module.exports = {
   ...base,

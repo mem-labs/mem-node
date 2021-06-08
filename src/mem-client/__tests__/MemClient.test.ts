@@ -1,3 +1,5 @@
+import { HealthCheckDocument } from "../../api/__codegen__/types";
+import { mockQuery } from "../../services/mock-server/mocking";
 import { MemClient } from "../MemClient";
 
 const mockApiKey = "mock-api-key";
@@ -16,8 +18,17 @@ describe("MemClient", () => {
   });
 
   describe("healthCheck", () => {
-    it("fires off a graphql request", () => {
+    it("fires off a graphql request", async () => {
+      mockQuery({
+        document: HealthCheckDocument,
+        mockData: {
+          healthCheckDetails: { apiStatus: true },
+        },
+      });
+
       const result = await getMockClient().healthCheck();
+
+      expect(result).toBeTrue();
     });
   });
 });
