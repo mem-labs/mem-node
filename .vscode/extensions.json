@@ -2,7 +2,8 @@
   "recommendations": [
     "arcanis.vscode-zipfs",
     "dbaeumer.vscode-eslint",
-    "knisterpeter.vscode-github"
+    "knisterpeter.vscode-github",
+    "streetsidesoftware.code-spell-checker"
   ],
   "unwantedRecommendations": [
     "esbenp.prettier-vscode"

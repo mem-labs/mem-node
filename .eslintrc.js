@@ -1,23 +1,23 @@
 const { eslintSettings } = require("@mem-labs/toolchain-configurations");
 
+const {
+  base,
+  plugins: { typescript, importOrder, prettier },
+} = eslintSettings;
+
 module.exports = {
-  env: eslintSettings.baseEnv,
-  parser: "@typescript-eslint/parser",
+  ...base,
+  parser: typescript.parser,
   parserOptions: {
-    ...eslintSettings.plugins.typescript.parserOptions,
+    ...typescript.parserOptions,
   },
-  plugins: ["@typescript-eslint", "prettier"],
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-  ],
+  plugins: [...importOrder.plugins, ...typescript.plugins, ...prettier.plugins],
+  extends: [...base.extends, ...typescript.extends, ...prettier.extends, ...importOrder.extends],
   rules: {
-    ...eslintSettings.baseRules,
-    ...eslintSettings.plugins.typescript.baseRules,
+    ...base.rules,
+    ...typescript.baseRules,
+    ...importOrder.baseRules,
   },
-  overrides: [
-    ...eslintSettings.baseOverrides,
-    ...eslintSettings.plugins.typescript.jsOverrides,
-  ],
+  settings: { ...importOrder.configSettings },
+  overrides: [...base.overrides, ...typescript.jsOverrides],
 };

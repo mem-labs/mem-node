@@ -1,24 +1,12 @@
   mutation CreateMem(
-    $content: String!
-    $format: MemFormat
-    $skipInbox: Boolean
-    $createdAt: DateTime
-    $snoozeUntil: DateTime
+    $input: CreateMemInput!
   ) {
     createMem(
-      input: {
-        content: $content
-        format: $format
-        skipInbox: $skipInbox
-        createdAt: $createdAt
-        snoozeUntil: $snoozeUntil
-      }
+      input: $input
     ) {
+      success
       mem {
         id
-        content {
-          plaintext
-        }
       }
     }
   }

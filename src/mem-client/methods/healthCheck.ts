@@ -1,4 +1,5 @@
 import { HealthCheckDocument } from "../../api/__codegen__/types";
+
 import { MemClientMethodArgs } from "./types";
 
 export const memClientHealthCheck =
