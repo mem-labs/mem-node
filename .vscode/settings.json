@@ -22,6 +22,8 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.words": [
     "codegen",
+    "dedupe",
+    "mem's",
     "toolchain"
   ]
 }

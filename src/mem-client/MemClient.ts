@@ -6,6 +6,7 @@ import { ClientInitializationError } from "../utils/errors/base";
 import { Logger } from "../utils/logger";
 
 import { defaultMemApiEndpoint } from "./constants";
+import { memClientBatchCreateMems } from "./methods/batchCreateMems";
 import { memClientCreateMem } from "./methods/createMem";
 import { memClientHealthCheck } from "./methods/healthCheck";
 import { MemClientConfig } from "./types";
@@ -59,4 +60,6 @@ export class MemClient {
   healthCheck = memClientHealthCheck({ memClient: this });
 
   createMem = memClientCreateMem({ memClient: this });
+
+  batchCreateMems = memClientBatchCreateMems({ memClient: this });
 }

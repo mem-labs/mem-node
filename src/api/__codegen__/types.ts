@@ -6,7 +6,11 @@
  */
 
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
-export type Maybe<T> = T;
+
+import { CursorScalar } from "../../utils/graphql/types";
+import { DateTimeScalar } from "../../utils/graphql/types";
+import { UuidScalar } from "../../utils/graphql/types";
+export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -18,11 +22,11 @@ export type Scalars = {
   Int: number;
   Float: number;
   /** Cursor Scalar Type */
-  Cursor: any;
+  Cursor: CursorScalar;
   /** DateTime Scalar Type */
-  DateTime: any;
+  DateTime: DateTimeScalar;
   /** Uuid Scalar Type */
-  Uuid: any;
+  Uuid: UuidScalar;
 };
 
 /** An Account. */
@@ -38,11 +42,11 @@ export type GqAccount = GqNode & {
 
 /** An Account. */
 export type GqAccountAccountApiKeysArgs = {
-  after?: Maybe<Scalars["Cursor"]>;
-  before?: Maybe<Scalars["Cursor"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  filterBy?: Maybe<GqAccountAccountApiKeysFilters>;
+  after: Maybe<Scalars["Cursor"]>;
+  before: Maybe<Scalars["Cursor"]>;
+  first: Maybe<Scalars["Int"]>;
+  last: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqAccountAccountApiKeysFilters>;
 };
 
 export type GqAccountAccountApiKeysFilters = {
@@ -269,11 +273,11 @@ export type GqQueryGetAccountApiKeyArgs = {
 };
 
 export type GqQuerySearchAccountApiKeysArgs = {
-  after?: Maybe<Scalars["Cursor"]>;
-  before?: Maybe<Scalars["Cursor"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  filterBy?: Maybe<GqSearchAccountApiKeysFilters>;
+  after: Maybe<Scalars["Cursor"]>;
+  before: Maybe<Scalars["Cursor"]>;
+  first: Maybe<Scalars["Int"]>;
+  last: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqSearchAccountApiKeysFilters>;
 };
 
 export type GqQueryGetAccountArgs = {
@@ -281,11 +285,11 @@ export type GqQueryGetAccountArgs = {
 };
 
 export type GqQuerySearchAccountsArgs = {
-  after?: Maybe<Scalars["Cursor"]>;
-  before?: Maybe<Scalars["Cursor"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  filterBy?: Maybe<GqSearchAccountsFilters>;
+  after: Maybe<Scalars["Cursor"]>;
+  before: Maybe<Scalars["Cursor"]>;
+  first: Maybe<Scalars["Int"]>;
+  last: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqSearchAccountsFilters>;
 };
 
 export type GqQueryGetMemArgs = {
@@ -388,10 +392,7 @@ export type GqHealthCheckQuery = { __typename?: "Query" } & {
   >;
 };
 
-export const BatchCreateMemsDocument: DocumentNode<
-  GqBatchCreateMemsMutation,
-  GqBatchCreateMemsMutationVariables
-> = {
+export const BatchCreateMemsDocument = {
   kind: "Document",
   definitions: [
     {
@@ -446,8 +447,8 @@ export const BatchCreateMemsDocument: DocumentNode<
       },
     },
   ],
-};
-export const CreateMemDocument: DocumentNode<GqCreateMemMutation, GqCreateMemMutationVariables> = {
+} as unknown as DocumentNode<GqBatchCreateMemsMutation, GqBatchCreateMemsMutationVariables>;
+export const CreateMemDocument = {
   kind: "Document",
   definitions: [
     {
@@ -496,8 +497,8 @@ export const CreateMemDocument: DocumentNode<GqCreateMemMutation, GqCreateMemMut
       },
     },
   ],
-};
-export const HealthCheckDocument: DocumentNode<GqHealthCheckQuery, GqHealthCheckQueryVariables> = {
+} as unknown as DocumentNode<GqCreateMemMutation, GqCreateMemMutationVariables>;
+export const HealthCheckDocument = {
   kind: "Document",
   definitions: [
     {
@@ -519,4 +520,4 @@ export const HealthCheckDocument: DocumentNode<GqHealthCheckQuery, GqHealthCheck
       },
     },
   ],
-};
+} as unknown as DocumentNode<GqHealthCheckQuery, GqHealthCheckQueryVariables>;

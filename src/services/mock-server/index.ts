@@ -5,6 +5,7 @@ import {
   _mockServerListen,
   _mockServerResetHandlers,
 } from "./lifecycle";
+import { _mockServerMutation, _mockServerQuery } from "./mocking";
 
 export const mockServerService = {
   initialize: _initializeMockServer,
@@ -12,4 +13,6 @@ export const mockServerService = {
   listen: _mockServerListen,
   resetHandlers: _mockServerResetHandlers,
   close: _mockServerClose,
+  mockQuery: _mockServerQuery,
+  mockMutation: _mockServerMutation,
 } as const;
