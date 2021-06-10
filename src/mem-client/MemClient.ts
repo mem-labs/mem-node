@@ -2,10 +2,12 @@ import { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import { GraphQLClient } from "graphql-request";
 import { JsonObject } from "type-fest";
 
+import { graphqlService } from "../services/mock-server/graphql";
 import { ClientInitializationError } from "../utils/errors/base";
+import { RuntimeError } from "../utils/errors/runtime";
 import { Logger } from "../utils/logger";
 
-import { defaultMemApiEndpoint } from "./constants";
+import { defaultMemAuthorizationScheme, defaultMemApiEndpoint } from "./constants";
 import { memClientBatchCreateMems } from "./methods/batchCreateMems";
 import { memClientCreateMem } from "./methods/createMem";
 import { memClientHealthCheck } from "./methods/healthCheck";
@@ -15,20 +17,20 @@ export class MemClient {
   private apiClient: GraphQLClient;
   private logger: Logger;
 
-  constructor({ apiEndpoint = defaultMemApiEndpoint, apiKey, logLevel }: MemClientConfig) {
+  constructor({ apiEndpoint = defaultMemApiEndpoint, apiAccessToken, logLevel }: MemClientConfig) {
     this.logger = new Logger({
       level: logLevel,
     });
 
-    if (!apiKey) {
+    if (!apiAccessToken) {
       throw new ClientInitializationError({
-        message: "An `apiKey` must be provided when initializing the MemClient.",
+        message: "An `apiAccessToken` must be provided when initializing the MemClient.",
       });
     }
 
     const defaultHeaders = {
       "Content-Type": "application/json",
-      Authorization: apiKey,
+      Authorization: `${defaultMemAuthorizationScheme} ${apiAccessToken}`,
     };
 
     this.apiClient = new GraphQLClient(apiEndpoint, {
@@ -53,8 +55,13 @@ export class MemClient {
     } catch (err) {
       this.logger.debug(`[graphqlRequest()] An error ocurred.`, err);
 
-      throw err;
+      graphqlService.handleRequestErrors({
+        err,
+      });
     }
+
+    /** This should never be hit - adding it for TS purposes. */
+    throw new RuntimeError();
   }
 
   healthCheck = memClientHealthCheck({ memClient: this });

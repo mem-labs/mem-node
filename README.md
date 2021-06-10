@@ -43,7 +43,7 @@ These examples show the most common features of the `MemClient`. You'll find mor
 import { MemClient } from "@mem-labs/mem-node";
 
 const memClient = new MemClient({
-  apiKey: "<API_KEY_HERE>"
+  apiAccessToken: "<Replace this with your access token>"
 });
 ```
 
