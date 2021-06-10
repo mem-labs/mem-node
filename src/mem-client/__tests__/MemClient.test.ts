@@ -9,7 +9,7 @@ import { MemClient } from "../MemClient";
 const mockApiKey = "mock-api-key";
 
 const getMockClient = () => {
-  const mockClient = new MemClient({ apiKey: mockApiKey });
+  const mockClient = new MemClient({ apiAccessToken: mockApiKey });
 
   return mockClient;
 };

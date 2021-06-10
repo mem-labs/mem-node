@@ -7,7 +7,7 @@ export const memClientHealthCheck =
   /**
    * Returns true if the client is are able to successfully contact the server.
    *
-   * Useful for verifying that your `apiKey` is working successfully.
+   * Useful for verifying that your `apiAccessToken` is working successfully.
    */
   async () => {
     const result = await memClient.graphqlRequest(HealthCheckDocument);
