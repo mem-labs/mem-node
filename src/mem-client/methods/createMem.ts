@@ -10,6 +10,7 @@ export interface MemClientCreateMemArgs {
   isArchived?: MutationVariables["isArchived"];
   scheduledFor?: MutationVariables["scheduledFor"];
   createdAt?: MutationVariables["createdAt"];
+  memId?: MutationVariables["memId"];
 }
 
 export const memClientCreateMem =
@@ -17,15 +18,25 @@ export const memClientCreateMem =
   /**
    * Creates a new mem, then returns the some details about the created mem.
    */
-  async ({ content, isRead, isArchived, scheduledFor, createdAt }: MemClientCreateMemArgs) => {
+  async ({
+    memId,
+    content,
+    isRead,
+    isArchived,
+    scheduledFor,
+    createdAt,
+  }: MemClientCreateMemArgs) => {
     const input = {
-      memId: null,
+      memId: memId ?? null,
       content,
       format: null,
       isRead: isRead ?? null,
       isArchived: isArchived ?? null,
       scheduledFor: scheduledFor ?? null,
       createdAt: createdAt ?? null,
+      richTextDocument: null,
+      source: null,
+      clientId: null,
     };
 
     const result = await memClient.graphqlRequest(CreateMemDocument, {

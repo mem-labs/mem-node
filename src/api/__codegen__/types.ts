@@ -7,8 +7,14 @@
 
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 
+import { AnyJsonObjectScalar } from "../../utils/graphql/types";
+import { AnyJsonValueScalar } from "../../utils/graphql/types";
+import { ColorScalar } from "../../utils/graphql/types";
 import { CursorScalar } from "../../utils/graphql/types";
 import { DateTimeScalar } from "../../utils/graphql/types";
+import { RichTextDeltaScalar } from "../../utils/graphql/types";
+import { RichTextDocumentScalar } from "../../utils/graphql/types";
+import { UploadScalar } from "../../utils/graphql/types";
 import { UuidScalar } from "../../utils/graphql/types";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -21,10 +27,22 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  AnyJsonObject: AnyJsonObjectScalar;
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  AnyJsonValue: AnyJsonValueScalar;
+  /** Color Scalar Type */
+  Color: ColorScalar;
   /** Cursor Scalar Type */
   Cursor: CursorScalar;
   /** DateTime Scalar Type */
   DateTime: DateTimeScalar;
+  /** The `RichTextDelta` scalar type represents a Mem RichTextDelta. */
+  RichTextDelta: RichTextDeltaScalar;
+  /** The `RichTextDocument` scalar type represents a Mem RichTextDocument. */
+  RichTextDocument: RichTextDocumentScalar;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: UploadScalar;
   /** Uuid Scalar Type */
   Uuid: UuidScalar;
 };
@@ -36,22 +54,78 @@ export type GqAccount = GqNode & {
   id: Scalars["Uuid"];
   /** The primary email connected to the user's account. */
   email: Scalars["String"];
+  /** The profile display name which is associated with this account. */
+  profileDisplayName: Scalars["String"];
+  /** The profile image url which is associated with this account. */
+  profileImageUrl: Scalars["String"];
+  /**
+   * The favorite items associated with this account.
+   * @deprecated - use accountFavoriteItems instead.
+   */
+  favoriteItems: Array<GqFavoriteItem>;
+  /** The semantically similar mems associated with this account and search query. */
+  semanticallySimilarMemsForSearchQuery: Array<GqItemWithScore>;
+  /** The favorite items associated with this account. */
+  accountFavoriteItems: Array<GqAccountFavoriteItem>;
+  /** The preferences associated with this account. */
+  preferences: GqAccountPreferences;
+  /** Represents whether the account is "internal" or not (meaning that they are an employee/internal account.) */
+  isInternalAccount: Scalars["Boolean"];
+  /** A list of enabled feature toggles. */
+  enabledFeatureToggles: Array<GqFeatureToggleSlug>;
   /** API keys associated with the account. */
-  accountApiKeys: GqAccountApiKeyConnection;
+  searchAccountApiKeys: GqAccountApiKeyCursorConnection;
+  /** Search the knowledge graph associated with the account. */
+  searchKnowledgeGraph: GqKnowledgeGraphLimitOffsetConnection;
+  /** Information associated with the account's knowledge graph. */
+  knowledgeGraphInfo: GqAccountKnowledgeGraphInfo;
+  /** Search the facets for the knowledge graph associated with the account. */
+  searchKnowledgeGraphFacets: GqKnowledgeGraphFacetsLimitOffsetConnection;
+  /** Returns the mem inbox details for the account <> mem mapping. */
+  memInboxDetails: GqAccountMemInboxDetails;
+  /** The WorkspaceAccounts associated with this account. */
+  workspaceAccounts: Array<GqWorkspaceAccount>;
+  /** The AccountBatchImports associated with this account. */
+  accountBatchImports: Array<GqAccountBatchImport>;
+  /**
+   * The related firestore user.
+   * It may not always exist (so it is nullable).
+   */
+  firestoreUser: Maybe<GqFirestoreUser>;
 };
 
 /** An Account. */
-export type GqAccountAccountApiKeysArgs = {
+export type GqAccountSemanticallySimilarMemsForSearchQueryArgs = {
+  searchQuery: Scalars["String"];
+};
+
+/** An Account. */
+export type GqAccountSearchAccountApiKeysArgs = {
   after: Maybe<Scalars["Cursor"]>;
   before: Maybe<Scalars["Cursor"]>;
   first: Maybe<Scalars["Int"]>;
   last: Maybe<Scalars["Int"]>;
-  filterBy: Maybe<GqAccountAccountApiKeysFilters>;
+  filterBy: Maybe<GqAccountSearchAccountApiKeysFilters>;
 };
 
-export type GqAccountAccountApiKeysFilters = {
-  /** Include API Keys which have been revoked. */
-  includeRevoked: Maybe<Scalars["Boolean"]>;
+/** An Account. */
+export type GqAccountSearchKnowledgeGraphArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqAccountSearchKnowledgeGraphFilters>;
+  source: Maybe<GqAccountSearchKnowledgeGraphSources>;
+};
+
+/** An Account. */
+export type GqAccountSearchKnowledgeGraphFacetsArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqAccountSearchKnowledgeGraphFacetsFilters>;
+};
+
+/** An Account. */
+export type GqAccountMemInboxDetailsArgs = {
+  memId: Scalars["Uuid"];
 };
 
 /** An Account API Key. */
@@ -70,47 +144,536 @@ export type GqAccountApiKey = GqNode & {
 };
 
 /** The connection type for AccountApiKey. */
-export type GqAccountApiKeyConnection = {
-  __typename?: "AccountApiKeyConnection";
-  /** A list of edges. */
-  edges: Array<GqAccountApiKeyEdge>;
+export type GqAccountApiKeyCursorConnection = {
+  __typename?: "AccountApiKeyCursorConnection";
   /** A list of nodes. */
   nodes: Array<GqAccountApiKey>;
   /** Information to aid in pagination. */
-  pageInfo: GqPageInfo;
+  pageInfo: GqCursorPageInfo;
   /** Identifies the total count of items in the connection. */
   totalCount: Scalars["Int"];
 };
 
-/** An edge in a connection. */
-export type GqAccountApiKeyEdge = {
-  __typename?: "AccountApiKeyEdge";
-  /** A cursor for use in pagination. */
-  cursor: Scalars["Cursor"];
-  /** The item at the end of the edge. */
-  node: Maybe<GqAccountApiKey>;
+export type GqAccountBatchImport = {
+  __typename?: "AccountBatchImport";
+  /** The id of the import batch. */
+  id: Scalars["Uuid"];
+  /** The tasks related to the import batch. */
+  tasks: Array<GqAccountBatchImportTask>;
+  /** Some details relating to the batch. */
+  batchDetails: GqAccountBatchImportDetails;
+};
+
+export type GqAccountBatchImportDetails = {
+  __typename?: "AccountBatchImportDetails";
+  /** Total count of tasks in batch. */
+  totalCount: Scalars["Int"];
+  /** Total count of tasks "completed" in batch. */
+  totalCountCompleted: Scalars["Int"];
+  /** Total count of tasks "failed" in batch. */
+  totalCountFailed: Scalars["Int"];
+  /** Total count of tasks "in_progress" in batch. */
+  totalCountInProgress: Scalars["Int"];
+};
+
+export type GqAccountBatchImportTask = {
+  __typename?: "AccountBatchImportTask";
+  /** The id of the import task. */
+  id: Scalars["Uuid"];
+  /** Some details relating to the task. */
+  taskDetails: GqAccountBatchImportTaskDetails;
+};
+
+export type GqAccountBatchImportTaskDetails = {
+  __typename?: "AccountBatchImportTaskDetails";
+  /** The state of the import task. */
+  state: Scalars["String"];
+  /** The result of the import task. */
+  result: Scalars["AnyJsonObject"];
+  /** The error details of the import task. */
+  errorDetails: Scalars["AnyJsonObject"];
 };
 
 /** The connection type for Account. */
-export type GqAccountConnection = {
-  __typename?: "AccountConnection";
-  /** A list of edges. */
-  edges: Array<GqAccountEdge>;
+export type GqAccountCursorConnection = {
+  __typename?: "AccountCursorConnection";
   /** A list of nodes. */
   nodes: Array<GqAccount>;
   /** Information to aid in pagination. */
-  pageInfo: GqPageInfo;
+  pageInfo: GqCursorPageInfo;
   /** Identifies the total count of items in the connection. */
   totalCount: Scalars["Int"];
 };
 
-/** An edge in a connection. */
-export type GqAccountEdge = {
-  __typename?: "AccountEdge";
-  /** A cursor for use in pagination. */
-  cursor: Scalars["Cursor"];
-  /** The item at the end of the edge. */
-  node: GqAccount;
+export type GqAccountFavoriteItem =
+  | GqMemAccountFavoriteItem
+  | GqTopicAccountFavoriteItem
+  | GqSearchQueryAccountFavoriteItem;
+
+/** The kind of account favorite item. */
+export enum GqAccountFavoriteItemKind {
+  Mem = "MEM",
+  SearchQuery = "SEARCH_QUERY",
+  Topic = "TOPIC",
+}
+
+export type GqAccountKnowledgeGraphInfo = {
+  __typename?: "AccountKnowledgeGraphInfo";
+  /** Get recent knowledge graph searches. */
+  recentSearches: Array<GqAccountKnowledgeGraphRecentSearch>;
+  /**
+   * Get recent knowledge graph searches from share sheet.
+   * @deprecated Use `recentSearches with source: MEM_SHARE_SHEET` instead.
+   */
+  recentSearchesFromShareSheet: Array<GqAccountKnowledgeGraphRecentSearch>;
+  /** Get recently edited mems. */
+  recentMems: Array<GqMem>;
+  /** Get knowledge graph recommended save-to-mem items for this account. */
+  recommendedSavedToMemItems: Array<GqRecommendedSavedToMemItem>;
+  /** Get knowledge graph recommended people for this account. */
+  recommendedPeople: Array<GqAccount>;
+  /** Get knowledge graph recommended topics for this account. */
+  recommendedTopics: Array<GqTopic>;
+  /** Get recommended action items for this account. */
+  recommendedActionItems: Array<GqKnowledgeGraphRecommendedNodes>;
+};
+
+export type GqAccountKnowledgeGraphInfoRecentSearchesArgs = {
+  source: Maybe<GqAccountSearchKnowledgeGraphSources>;
+};
+
+export type GqAccountKnowledgeGraphInfoRecommendedActionItemsArgs = {
+  deviceCoordinates: Maybe<GqCoordinates>;
+};
+
+export type GqAccountKnowledgeGraphRecentSearch = {
+  __typename?: "AccountKnowledgeGraphRecentSearch";
+  /** A query string used most recently to search the knowledge graph by this account. */
+  queryString: Scalars["String"];
+};
+
+export type GqAccountKnowledgeNode = GqGenericKnowledgeNode & {
+  __typename?: "AccountKnowledgeNode";
+  /** Internal Account-specific details related search system. */
+  internalKnowledgeNodeDetails: GqInternalKnowledgeNodeDetails;
+  /** Internal Account-specific details related to the search system. */
+  internalAccountKnowledgeNodeDetails: GqInternalAccountKnowledgeNodeDetails;
+  /** The primary label - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** The secondary label - used for displaying search results. Optional. */
+  secondaryLabel: Maybe<Scalars["String"]>;
+  /** The created-at time of the associated account. */
+  createdAt: Scalars["DateTime"];
+  /** The edited-at time of the associated account. */
+  editedAt: Scalars["DateTime"];
+};
+
+export type GqAccountLimitOffsetConnection = {
+  __typename?: "AccountLimitOffsetConnection";
+  /** A list of nodes. */
+  nodes: Array<GqAccount>;
+  /** Information to aid in pagination. */
+  pageInfo: GqLimitOffsetPageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export type GqAccountMemInboxDetails = {
+  __typename?: "AccountMemInboxDetails";
+  /** Boolean that marks whether the inbox item is unread. */
+  isUnread: Scalars["Boolean"];
+  /** State of the mem in the account inbox (archived, snoozed, etc.) */
+  inboxState: GqAccountMemInboxState;
+  /** Subscription level between the account and mem (muted, etc.) */
+  subscriptionLevel: GqAccountMemInboxSubscriptionLevel;
+};
+
+export type GqAccountMemInboxState =
+  | GqAccountMemInboxStateInbox
+  | GqAccountMemInboxStateArchived
+  | GqAccountMemInboxStateSnoozed;
+
+export type GqAccountMemInboxStateArchived = GqGenericAccountMemInboxState & {
+  __typename?: "AccountMemInboxStateArchived";
+  /** The kind of inbox state. */
+  kind: GqAccountMemInboxStateKind;
+};
+
+export type GqAccountMemInboxStateInbox = GqGenericAccountMemInboxState & {
+  __typename?: "AccountMemInboxStateInbox";
+  /** The kind of inbox state. */
+  kind: GqAccountMemInboxStateKind;
+};
+
+export type GqAccountMemInboxStateInput = {
+  /** The kind of inbox-state. */
+  kind: GqAccountMemInboxStateKind;
+  /** The "snoozed-until" time. */
+  snoozedUntil: Maybe<Scalars["DateTime"]>;
+};
+
+/** A list of valid inbox account state kinds. */
+export enum GqAccountMemInboxStateKind {
+  Inbox = "INBOX",
+  Archived = "ARCHIVED",
+  Snoozed = "SNOOZED",
+}
+
+export type GqAccountMemInboxStateSnoozed = GqGenericAccountMemInboxState & {
+  __typename?: "AccountMemInboxStateSnoozed";
+  /** The kind of inbox state. */
+  kind: GqAccountMemInboxStateKind;
+  /** The "snoozed-until" time. */
+  snoozedUntil: Scalars["DateTime"];
+};
+
+export type GqAccountMemInboxSubscriptionLevel =
+  | GqAccountMemInboxSubscriptionLevelAll
+  | GqAccountMemInboxSubscriptionLevelDigest
+  | GqAccountMemInboxSubscriptionLevelMuted;
+
+export type GqAccountMemInboxSubscriptionLevelAll = GqGenericAccountMemInboxSubscriptionLevel & {
+  __typename?: "AccountMemInboxSubscriptionLevelAll";
+  /** The kind of inbox subscription level. */
+  kind: GqAccountMemInboxSubscriptionLevelKind;
+};
+
+export type GqAccountMemInboxSubscriptionLevelDigest = GqGenericAccountMemInboxSubscriptionLevel & {
+  __typename?: "AccountMemInboxSubscriptionLevelDigest";
+  /** The kind of inbox subscription level. */
+  kind: GqAccountMemInboxSubscriptionLevelKind;
+};
+
+export type GqAccountMemInboxSubscriptionLevelInput = {
+  /** The kind of inbox subscription level. */
+  kind: GqAccountMemInboxSubscriptionLevelKind;
+};
+
+/** A list of valid inbox subscription level kinds. */
+export enum GqAccountMemInboxSubscriptionLevelKind {
+  All = "ALL",
+  Digest = "DIGEST",
+  Muted = "MUTED",
+}
+
+export type GqAccountMemInboxSubscriptionLevelMuted = GqGenericAccountMemInboxSubscriptionLevel & {
+  __typename?: "AccountMemInboxSubscriptionLevelMuted";
+  /** The kind of inbox subscription level. */
+  kind: GqAccountMemInboxSubscriptionLevelKind;
+};
+
+/** A list of valid account preference slugs. */
+export enum GqAccountPreferenceSlug {
+  ExampleAccountPreference = "EXAMPLE_ACCOUNT_PREFERENCE",
+  RecordMemInteractionLocationPolicy = "RECORD_MEM_INTERACTION_LOCATION_POLICY",
+}
+
+export type GqAccountPreferences = {
+  __typename?: "AccountPreferences";
+  /**
+   * A preference regarding whether locations should be recorded when mems
+   * are interacted with (compose, edit, etc.)
+   */
+  recordMemInteractionLocationPolicy: GqRecordMemInteractionLocationPolicyAccountPreference;
+};
+
+export type GqAccountSearchAccountApiKeysFilters = {
+  /** Include API Keys which have been revoked. */
+  includeRevoked: Maybe<Scalars["Boolean"]>;
+};
+
+export type GqAccountSearchKnowledgeGraphFacetsFilters = {
+  /** The query string. */
+  queryString: Maybe<Scalars["String"]>;
+};
+
+export type GqAccountSearchKnowledgeGraphFilters = {
+  /** The query string. */
+  queryString: Maybe<Scalars["String"]>;
+  /** Facets exposed by the search. */
+  filterableFacetKinds: Maybe<Array<GqKnowledgeGraphFacetKind>>;
+  /** The facet and value of the facet to filter by. */
+  facetFilters: Maybe<Array<GqKnowledgeGraphFacetFilter>>;
+  /** The kinds of entities to be retrieved by the search. */
+  entityKindsToRetrieve: Maybe<Array<GqKnowledgeNodeSearchObjectKind>>;
+};
+
+export enum GqAccountSearchKnowledgeGraphSources {
+  MemApp = "MEM_APP",
+  MemIos = "MEM_IOS",
+  MemKeyboard = "MEM_KEYBOARD",
+  MemShareSheet = "MEM_SHARE_SHEET",
+}
+
+/** A list of valid account workspace roles. */
+export enum GqAccountWorkspaceRoleKind {
+  Owner = "OWNER",
+  Admin = "ADMIN",
+  Member = "MEMBER",
+}
+
+export type GqAddAccountFavoriteItemInput = {
+  /** The identifier for the account which should be updated. */
+  accountId: Scalars["Uuid"];
+  /** String describing the item. */
+  label: Scalars["String"];
+  /** Value of the item. */
+  value: GqFavoriteItemValueInput;
+};
+
+export type GqAddAccountFavoriteItemPayload = {
+  __typename?: "AddAccountFavoriteItemPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+/** A list of admin functions. */
+export enum GqAdminFunctionName {
+  IndexAllMemsFromFirebase = "INDEX_ALL_MEMS_FROM_FIREBASE",
+  ReindexAllMemsInApiDb = "REINDEX_ALL_MEMS_IN_API_DB",
+  IndexAllTemplatesFromFirebase = "INDEX_ALL_TEMPLATES_FROM_FIREBASE",
+  BackfillAllMemEmbeddings = "BACKFILL_ALL_MEM_EMBEDDINGS",
+  BackfillMemCurieEmbeddingsForAuthorizedUsers = "BACKFILL_MEM_CURIE_EMBEDDINGS_FOR_AUTHORIZED_USERS",
+  BackfillMemCurieEmbeddingsForAuthorizedUsersFromDate = "BACKFILL_MEM_CURIE_EMBEDDINGS_FOR_AUTHORIZED_USERS_FROM_DATE",
+  BackfillMemCurieSearchDocEmbeddingsForAuthorizedUsers = "BACKFILL_MEM_CURIE_SEARCH_DOC_EMBEDDINGS_FOR_AUTHORIZED_USERS",
+  IndexAllFirestoreUsersInFirebase = "INDEX_ALL_FIRESTORE_USERS_IN_FIREBASE",
+}
+
+export type GqAppendToMemContentInput = {
+  /** The identifier for the target Mem. */
+  memId: Scalars["Uuid"];
+  /**
+   * The contents which should be appended to the existing mem.
+   * Must be in the markdown format.
+   *
+   * (Titles and tags are automatically parsed from the content.)
+   */
+  content: Maybe<Scalars["String"]>;
+  /**
+   * The contents which should be appended to the existing mem.
+   * Must be in the rich-text-document format.
+   */
+  richTextDocument: Maybe<Scalars["RichTextDocument"]>;
+  /**
+   * Defaults to the current time.
+   * Pass an explicit time to override the default.
+   */
+  updatedAt: Maybe<Scalars["DateTime"]>;
+  /**
+   * An identifier for the client submitting the request.
+   * Optional, but recommended.
+   */
+  clientId: Maybe<Scalars["Uuid"]>;
+};
+
+export type GqAppendToMemContentPayload = {
+  __typename?: "AppendToMemContentPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The Mem which was updated. */
+  mem: GqMem;
+};
+
+export type GqAuthenticateAccountUsingGoogleOAuthCodeInput = {
+  /** The code which should be used for authentication. */
+  code: Scalars["String"];
+  /** The client which the code is associated with. */
+  client: GqGoogleOAuthClient;
+  /** The redirectURI which the code is associated with. */
+  redirectURI: Scalars["String"];
+};
+
+export type GqAuthenticateAccountUsingGoogleOAuthCodePayload = {
+  __typename?: "AuthenticateAccountUsingGoogleOAuthCodePayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The Account which was authenticated. */
+  authenticatedAccount: GqAccount;
+  /** The JWT which was generated. */
+  token: Scalars["String"];
+};
+
+export type GqAuthenticateUsingEmailPasswordInput = {
+  /** The email which should be used for authentication. */
+  email: Scalars["String"];
+  /** The password which should be used for authentication. */
+  password: Scalars["String"];
+};
+
+export type GqAuthenticateUsingEmailPasswordPayload = {
+  __typename?: "AuthenticateUsingEmailPasswordPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The Account which was authenticated. */
+  authenticatedAccount: GqAccount;
+  /** The JWT which was generated. */
+  token: Scalars["String"];
+};
+
+export type GqCacheGetResults = {
+  __typename?: "CacheGetResults";
+  /** The result string for the specified query. */
+  resultString: Scalars["String"];
+};
+
+export type GqCacheSetResults = {
+  __typename?: "CacheSetResults";
+  /** Whether the set was successful. */
+  success: Scalars["Boolean"];
+};
+
+export enum GqClickedEntityEventNames {
+  MemClicked = "MEM_CLICKED",
+}
+
+/** A list of valid client events. */
+export enum GqClientEventKind {
+  ExampleEvent = "EXAMPLE_EVENT",
+  /** Generic */
+  MemIosAppBooted = "MEM_IOS_APP_BOOTED",
+  MemIosLoadPersistedAccountSuccess = "MEM_IOS_LOAD_PERSISTED_ACCOUNT_SUCCESS",
+  MemIosLoadPersistedAccountFailureNotFound = "MEM_IOS_LOAD_PERSISTED_ACCOUNT_FAILURE_NOT_FOUND",
+  MemIosAppOpened = "MEM_IOS_APP_OPENED",
+  /** Login */
+  MemIosLoginScreenViewed = "MEM_IOS_LOGIN_SCREEN_VIEWED",
+  MemIosLoginScreenAccountLoginSuccess = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_LOGIN_SUCCESS",
+  MemIosLoginScreenAccountLoginFailureNotFound = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_LOGIN_FAILURE_NOT_FOUND",
+  MemIosLoginScreenAccountLoginFailureUnknown = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_LOGIN_FAILURE_UNKNOWN",
+  MemIosLoginScreenSignInWithGoogleClicked = "MEM_IOS_LOGIN_SCREEN_SIGN_IN_WITH_GOOGLE_CLICKED",
+  MemIosLoginScreenLearnMoreClicked = "MEM_IOS_LOGIN_SCREEN_LEARN_MORE_CLICKED",
+  MemIosLoginScreenAccountNotFoundMustSignUpClicked = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_NOT_FOUND_MUST_SIGN_UP_CLICKED",
+  /** Home */
+  MemIosHomeScreenViewed = "MEM_IOS_HOME_SCREEN_VIEWED",
+  MemIosHomeScreenLoadedResults = "MEM_IOS_HOME_SCREEN_LOADED_RESULTS",
+  MemIosHomeScreenSawNoResults = "MEM_IOS_HOME_SCREEN_SAW_NO_RESULTS",
+  MemIosHomeScreenLoadedMoreResults = "MEM_IOS_HOME_SCREEN_LOADED_MORE_RESULTS",
+  MemIosHomeScreenRefreshedResults = "MEM_IOS_HOME_SCREEN_REFRESHED_RESULTS",
+  MemIosHomeScreenSuggestionClicked = "MEM_IOS_HOME_SCREEN_SUGGESTION_CLICKED",
+  /** Search */
+  MemIosSearchScreenViewed = "MEM_IOS_SEARCH_SCREEN_VIEWED",
+  MemIosSearchScreenSearchExecuted = "MEM_IOS_SEARCH_SCREEN_SEARCH_EXECUTED",
+  MemIosSearchScreenSawNoResults = "MEM_IOS_SEARCH_SCREEN_SAW_NO_RESULTS",
+  MemIosSearchScreenLoadedMoreResults = "MEM_IOS_SEARCH_SCREEN_LOADED_MORE_RESULTS",
+  MemIosSearchScreenSuggestionClicked = "MEM_IOS_SEARCH_SCREEN_SUGGESTION_CLICKED",
+  MemIosSearchScreenOpenedFromNavigationBar = "MEM_IOS_SEARCH_SCREEN_OPENED_FROM_NAVIGATION_BAR",
+  MemIosSearchScreenOpenedFromHomeBar = "MEM_IOS_SEARCH_SCREEN_OPENED_FROM_HOME_BAR",
+  /** Share Sheet */
+  MemIosShareSheetViewed = "MEM_IOS_SHARE_SHEET_VIEWED",
+  /** Slice Results (Home + Search Views) */
+  MemIosSliceResultsItemClicked = "MEM_IOS_SLICE_RESULTS_ITEM_CLICKED",
+  /** Details */
+  MemIosDetailScreenViewed = "MEM_IOS_DETAIL_SCREEN_VIEWED",
+  MemIosDetailScreenMemEdited = "MEM_IOS_DETAIL_SCREEN_MEM_EDITED",
+  MemIosDetailScreenMemComposed = "MEM_IOS_DETAIL_SCREEN_MEM_COMPOSED",
+  MemIosDetailScreenTopicClicked = "MEM_IOS_DETAIL_SCREEN_TOPIC_CLICKED",
+  MemIosDetailScreenWebLinkClicked = "MEM_IOS_DETAIL_SCREEN_WEB_LINK_CLICKED",
+  MemIosDetailScreenLinkedFirestoreNoteClicked = "MEM_IOS_DETAIL_SCREEN_LINKED_FIRESTORE_NOTE_CLICKED",
+  MemIosDetailScreenMentionedFirestoreUserClicked = "MEM_IOS_DETAIL_SCREEN_MENTIONED_FIRESTORE_USER_CLICKED",
+  MemIosDetailScreenMentionedFirestoreGroupClicked = "MEM_IOS_DETAIL_SCREEN_MENTIONED_FIRESTORE_GROUP_CLICKED",
+  MemIosDetailScreenRelatedMemsViewed = "MEM_IOS_DETAIL_SCREEN_RELATED_MEMS_VIEWED",
+  /** Editing */
+  MemIosEditorCarouselCameraClicked = "MEM_IOS_EDITOR_CAROUSEL_CAMERA_CLICKED",
+  MemIosEditorCarouselPhotoClicked = "MEM_IOS_EDITOR_CAROUSEL_PHOTO_CLICKED",
+  MemIosEditorCarouselGalleryClicked = "MEM_IOS_EDITOR_CAROUSEL_GALLERY_CLICKED",
+  MemIosEditorToolbarGalleryClicked = "MEM_IOS_EDITOR_TOOLBAR_GALLERY_CLICKED",
+  MemIosEditorToolbarBulletedListClicked = "MEM_IOS_EDITOR_TOOLBAR_BULLETED_LIST_CLICKED",
+  MemIosEditorToolbarChecklistClicked = "MEM_IOS_EDITOR_TOOLBAR_CHECKLIST_CLICKED",
+  MemIosEditorToolbarAddTagClicked = "MEM_IOS_EDITOR_TOOLBAR_ADD_TAG_CLICKED",
+  MemIosEditorToolbarFormatClicked = "MEM_IOS_EDITOR_TOOLBAR_FORMAT_CLICKED",
+  MemIosEditorToolbarH1Clicked = "MEM_IOS_EDITOR_TOOLBAR_H1_CLICKED",
+  MemIosEditorToolbarH2Clicked = "MEM_IOS_EDITOR_TOOLBAR_H2_CLICKED",
+  MemIosEditorToolbarBoldClicked = "MEM_IOS_EDITOR_TOOLBAR_BOLD_CLICKED",
+  MemIosEditorToolbarItalicClicked = "MEM_IOS_EDITOR_TOOLBAR_ITALIC_CLICKED",
+  MemIosEditorToolbarUnderlineClicked = "MEM_IOS_EDITOR_TOOLBAR_UNDERLINE_CLICKED",
+  MemIosEditorToolbarStrikethroughClicked = "MEM_IOS_EDITOR_TOOLBAR_STRIKETHROUGH_CLICKED",
+  MemIosEditorToolbarCodeBlockClicked = "MEM_IOS_EDITOR_TOOLBAR_CODE_BLOCK_CLICKED",
+  MemIosEditorToolbarQuoteBlockClicked = "MEM_IOS_EDITOR_TOOLBAR_QUOTE_BLOCK_CLICKED",
+  MemIosEditorToolbarRemoveFormattingClicked = "MEM_IOS_EDITOR_TOOLBAR_REMOVE_FORMATTING_CLICKED",
+  /** Side Navigation */
+  MemIosSideNavigationViewed = "MEM_IOS_SIDE_NAVIGATION_VIEWED",
+  /** Help And Support */
+  MemIosSupportScreenViewed = "MEM_IOS_SUPPORT_SCREEN_VIEWED",
+  MemIosSupportScreenProductUpdatesClicked = "MEM_IOS_SUPPORT_SCREEN_PRODUCT_UPDATES_CLICKED",
+  MemIosSupportScreenFaqsClicked = "MEM_IOS_SUPPORT_SCREEN_FAQS_CLICKED",
+  MemIosSupportScreenTutorialsClicked = "MEM_IOS_SUPPORT_SCREEN_TUTORIALS_CLICKED",
+  MemIosSupportScreenBlogClicked = "MEM_IOS_SUPPORT_SCREEN_BLOG_CLICKED",
+  MemIosSupportScreenContactUsClicked = "MEM_IOS_SUPPORT_SCREEN_CONTACT_US_CLICKED",
+  /** Other Events */
+  MemIosAccountLoggedOut = "MEM_IOS_ACCOUNT_LOGGED_OUT",
+}
+
+/** A list of valid cloud tasks. */
+export enum GqCloudTaskKind {
+  HealthCheck = "HEALTH_CHECK",
+  ExampleEvent = "EXAMPLE_EVENT",
+  IndexMemEntity = "INDEX_MEM_ENTITY",
+  ReprocessMemEntity = "REPROCESS_MEM_ENTITY",
+  ExtractPeopleFromMemEntity = "EXTRACT_PEOPLE_FROM_MEM_ENTITY",
+  ExtractImplicitTopicsFromMemEntity = "EXTRACT_IMPLICIT_TOPICS_FROM_MEM_ENTITY",
+  ExtractTextFromImagesInsideMemEntity = "EXTRACT_TEXT_FROM_IMAGES_INSIDE_MEM_ENTITY",
+  StoreTrackedEvent = "STORE_TRACKED_EVENT",
+  ReindexAllMemsForAccount = "REINDEX_ALL_MEMS_FOR_ACCOUNT",
+  ReindexAllMemsInApiDb = "REINDEX_ALL_MEMS_IN_API_DB",
+  IndexAllMemsInFirebase = "INDEX_ALL_MEMS_IN_FIREBASE",
+  CreateUserAppNotificationForAllUsers = "CREATE_USER_APP_NOTIFICATION_FOR_ALL_USERS",
+  BatchIndexMemEntities = "BATCH_INDEX_MEM_ENTITIES",
+  IndexAccountEntity = "INDEX_ACCOUNT_ENTITY",
+  IndexAllUsersInFirebase = "INDEX_ALL_USERS_IN_FIREBASE",
+  BatchIndexFirestoreUsers = "BATCH_INDEX_FIRESTORE_USERS",
+  IndexGroupEntity = "INDEX_GROUP_ENTITY",
+  IndexMemTemplateEntity = "INDEX_MEM_TEMPLATE_ENTITY",
+  IndexAllTemplatesInFirebase = "INDEX_ALL_TEMPLATES_IN_FIREBASE",
+  BatchImportMems = "BATCH_IMPORT_MEMS",
+  ImportMemTask = "IMPORT_MEM_TASK",
+  BatchIndexMemTemplateEntities = "BATCH_INDEX_MEM_TEMPLATE_ENTITIES",
+  BackfillAllMemEmbeddings = "BACKFILL_ALL_MEM_EMBEDDINGS",
+  BackfillMemCurieEmbeddingsForAuthorizedUsers = "BACKFILL_MEM_CURIE_EMBEDDINGS_FOR_AUTHORIZED_USERS",
+  BackfillMemCurieSearchDocEmbeddingsForAuthorizedUsers = "BACKFILL_MEM_CURIE_SEARCH_DOC_EMBEDDINGS_FOR_AUTHORIZED_USERS",
+  BackfillMemCurieEmbeddingsForAuthorizedUsersFromDate = "BACKFILL_MEM_CURIE_EMBEDDINGS_FOR_AUTHORIZED_USERS_FROM_DATE",
+  BatchEmbedMems = "BATCH_EMBED_MEMS",
+  EmbedMem = "EMBED_MEM",
+  EmbedMemSearchDoc = "EMBED_MEM_SEARCH_DOC",
+  EmbedMems = "EMBED_MEMS",
+  EmbedMemsSearchDoc = "EMBED_MEMS_SEARCH_DOC",
+  BackfillMemCurieEmbeddingsForUserUsingFirestoreUserId = "BACKFILL_MEM_CURIE_EMBEDDINGS_FOR_USER_USING_FIRESTORE_USER_ID",
+  BackfillMemCurieSearchDocEmbeddingsForUserUsingFirestoreUserId = "BACKFILL_MEM_CURIE_SEARCH_DOC_EMBEDDINGS_FOR_USER_USING_FIRESTORE_USER_ID",
+}
+
+export type GqCommentThread = {
+  __typename?: "CommentThread";
+  /** The identifier of the associated comment thread. */
+  id: Scalars["String"];
+  /** The created-at time of the associated comment thread. */
+  createdAt: Scalars["DateTime"];
+  /** The updated-at time of the associated comment thread. */
+  updatedAt: Scalars["DateTime"];
+  /** The comments that are in the associated comment thread (firestore notes). */
+  comments: Array<GqFirestoreDraftNote>;
+  /** Whether or not the thread is unread for the user. */
+  isUnread: Scalars["Boolean"];
+  /** Whether or not the thread is done for the user. */
+  isDone: Scalars["Boolean"];
+  /** Whether or not the thread has an associated sharing noteID. */
+  isCommentThread: Scalars["Boolean"];
+  /** The title of the associated comment thread. */
+  title: Scalars["String"];
+  /** The users that have this comment thread in their trash. */
+  isInTrashForUsers: Array<Scalars["String"]>;
+  /** The ids of the inbox items of the associated comment thread. */
+  itemIds: Array<Scalars["String"]>;
+};
+
+export enum GqConvertedObjectIDsAfterSearchEventNames {
+  MemConverted = "MEM_CONVERTED",
+}
+
+export type GqCoordinates = {
+  /** The latitude of the geographical coordinate. */
+  latitude: Scalars["Float"];
+  /** The longitude of the geographical coordinate. */
+  longitude: Scalars["Float"];
 };
 
 export type GqCreateAccountApiKeyInput = {
@@ -139,14 +702,16 @@ export type GqCreateMemInput = {
   memId: Maybe<Scalars["Uuid"]>;
   /**
    * The initial contents of the mem.
-   * Titles and tags are automatically parsed from the content.
+   * Must be in the markdown format.
+   *
+   * (Titles and tags are automatically parsed from the content.)
    */
-  content: Scalars["String"];
+  content: Maybe<Scalars["String"]>;
   /**
-   * Specifies the format of the input.
-   * Defaults to "markdown".
+   * The initial contents of the mem.
+   * Must be in the rich-text-document format.
    */
-  format: Maybe<GqMemFormat>;
+  richTextDocument: Maybe<Scalars["RichTextDocument"]>;
   /** Specify whether the mem should be automatically marked as "read". */
   isRead: Maybe<Scalars["Boolean"]>;
   /** Specify whether the mem should be automatically marked as "archived". */
@@ -158,6 +723,16 @@ export type GqCreateMemInput = {
    * Pass an explicit time to override the default.
    */
   createdAt: Maybe<Scalars["DateTime"]>;
+  /**
+   * Mem source metadata.
+   * Defaults to API.
+   */
+  source: Maybe<GqCreateMemSourceInput>;
+  /**
+   * An identifier for the client submitting the request.
+   * Optional, but recommended.
+   */
+  clientId: Maybe<Scalars["Uuid"]>;
 };
 
 export type GqCreateMemPayload = {
@@ -168,6 +743,235 @@ export type GqCreateMemPayload = {
   mem: GqMem;
 };
 
+export type GqCreateMemSourceInput = {
+  /** What created this mem. */
+  type: GqMemCreationSourceKind;
+  /** Unique batch ID for the "Import" source kind */
+  importBatchId: Maybe<Scalars["Uuid"]>;
+  /** What was the kind of product for "Import" source kind */
+  importKind: Maybe<GqMemCreationImportSourceKind>;
+};
+
+export type GqCreateWorkspaceInput = {
+  /** The identifier for the Workspace. If not provided, the server will generate one. */
+  id: Maybe<Scalars["Uuid"]>;
+  /** The name of the workspace. */
+  name: Scalars["String"];
+};
+
+export type GqCreateWorkspacePayload = {
+  __typename?: "CreateWorkspacePayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The workspace which was created. */
+  workspace: GqWorkspace;
+};
+
+/** Information about pagination in a connection. */
+export type GqCursorPageInfo = {
+  __typename?: "CursorPageInfo";
+  /** When paginating forwards, the cursor to continue. */
+  endCursor: Maybe<Scalars["Cursor"]>;
+  /** When paginating backwards, the cursor to continue. */
+  startCursor: Maybe<Scalars["Cursor"]>;
+  /** When paginating forwards, are there more items? */
+  hasNextPage: Scalars["Boolean"];
+  /** When paginating backwards, are there more items? */
+  hasPreviousPage: Scalars["Boolean"];
+};
+
+export type GqDeleteAccountBatchImportMemsInput = {
+  /** The id of the import batch. */
+  accountBatchImportId: Scalars["Uuid"];
+};
+
+export type GqDeleteAccountBatchImportMemsPayload = {
+  __typename?: "DeleteAccountBatchImportMemsPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqDeleteAccountFavoriteItemInput = {
+  /** The identifier for the account which should be updated. */
+  accountId: Scalars["Uuid"];
+  /** Value of the item. */
+  value: GqFavoriteItemValueInput;
+};
+
+export type GqDeleteAccountFavoriteItemPayload = {
+  __typename?: "DeleteAccountFavoriteItemPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+export type GqFactKnowledgeNode = GqGenericKnowledgeNode & {
+  __typename?: "FactKnowledgeNode";
+  /** Internal fact-specific details related search system. */
+  internalKnowledgeNodeDetails: GqInternalKnowledgeNodeDetails;
+  /** Internal fact-specific details related to the search system. */
+  internalFactKnowledgeNodeDetails: GqInternalFactKnowledgeNodeDetails;
+  /** The primary label - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** The secondary label - used for displaying search results. Optional. */
+  secondaryLabel: Maybe<Scalars["String"]>;
+  /** The created-at time of the associated fact. */
+  createdAt: Scalars["DateTime"];
+  /** The edited-at time of the associated fact. */
+  editedAt: Scalars["DateTime"];
+};
+
+export type GqFactKnowledgeNodeContent = {
+  __typename?: "FactKnowledgeNodeContent";
+  /** Content in the plaintext format. */
+  plaintext: Scalars["String"];
+};
+
+export enum GqFactType {
+  Numeric = "NUMERIC",
+  Email = "EMAIL",
+  Url = "URL",
+  Password = "PASSWORD",
+}
+
+/**
+ * type FavoriteItem {
+ * @deprecated - use AccountFavoriteItem instead.
+ */
+export type GqFavoriteItem = {
+  __typename?: "FavoriteItem";
+  /** String describing the item. */
+  label: Scalars["String"];
+  /** The item value. */
+  value: GqFavoriteItemValue;
+};
+
+/**
+ * The kind of favorite item.
+ * @deprecated - use AccountFavoriteItemKind instead.
+ */
+export enum GqFavoriteItemKind {
+  Mem = "MEM",
+  SearchQuery = "SEARCH_QUERY",
+  Topic = "TOPIC",
+}
+
+export type GqFavoriteItemValue = GqMem;
+
+/** Union input type for all of the different FavoriteItemKinds. */
+export type GqFavoriteItemValueInput = {
+  /** The kind of the item. */
+  kind: GqFavoriteItemKind;
+  /**
+   * Id of a mem which should be added as a favorite.
+   * Required only for `kind` === `MEM`.
+   */
+  memId: Maybe<Scalars["Uuid"]>;
+  /**
+   * Query of the search.
+   * Required only for `kind` === `SEARCH_QUERY`.
+   */
+  searchQuery: Maybe<Scalars["String"]>;
+  /**
+   * Label of the topic.
+   * Required only for `kind` === `TOPIC`.
+   */
+  topicLabel: Maybe<Scalars["String"]>;
+};
+
+/** A list of valid feature toggle slugs. */
+export enum GqFeatureToggleSlug {
+  ExampleFeature = "EXAMPLE_FEATURE",
+  MemIosAlphaTester = "MEM_IOS_ALPHA_TESTER",
+  SearchIndexingAlphaTester = "SEARCH_INDEXING_ALPHA_TESTER",
+  MemIosBroadcastOnClient = "MEM_IOS_BROADCAST_ON_CLIENT",
+  SimilarMemsFeature = "SIMILAR_MEMS_FEATURE",
+  WorkspacesAlphaTester = "WORKSPACES_ALPHA_TESTER",
+  ElasticCloudSearchTester = "ELASTIC_CLOUD_SEARCH_TESTER",
+}
+
+export type GqFirestoreDraftNote = {
+  __typename?: "FirestoreDraftNote";
+  id: Scalars["String"];
+  body: Scalars["String"];
+  snapshotMap: Scalars["AnyJsonObject"];
+  created: Scalars["DateTime"];
+  streamIds: Array<Scalars["String"]>;
+  threadNoteId: Scalars["String"];
+  sharingNoteId: Scalars["String"];
+  acl: Scalars["AnyJsonObject"];
+  awareUserIds: Array<Scalars["String"]>;
+  contexts: Scalars["AnyJsonObject"];
+  updated: Scalars["DateTime"];
+  editableDuringUxId: Scalars["Boolean"];
+  source: Scalars["String"];
+  automaticSharingMode: Scalars["String"];
+  isInTrashForUsers: Array<Scalars["String"]>;
+  changesetProjectionId: Scalars["String"];
+  changesetVersion: Scalars["Int"];
+};
+
+export type GqFirestoreNote = {
+  __typename?: "FirestoreNote";
+  id: Scalars["String"];
+};
+
+export type GqFirestoreUser = {
+  __typename?: "FirestoreUser";
+  id: Scalars["String"];
+};
+
+export type GqGenericAccountFavoriteItem = {
+  /** String describing the item. */
+  label: Scalars["String"];
+};
+
+export type GqGenericAccountMemInboxState = {
+  /** The kind of inbox state. */
+  kind: GqAccountMemInboxStateKind;
+};
+
+export type GqGenericAccountMemInboxSubscriptionLevel = {
+  /** The kind of inbox subscription level. */
+  kind: GqAccountMemInboxSubscriptionLevelKind;
+};
+
+export type GqGenericItemWithScore = {
+  /** The similarity score between this mem and the query mem. */
+  score: Scalars["Float"];
+};
+
+export type GqGenericKnowledgeNode = {
+  /** Internal details related to the knowledge node. */
+  internalKnowledgeNodeDetails: GqInternalKnowledgeNodeDetails;
+  /** The primary label - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** The secondary label - used for displaying search results. Optional. */
+  secondaryLabel: Maybe<Scalars["String"]>;
+  /** The created-at time of the associated entity. */
+  createdAt: Scalars["DateTime"];
+  /** The edited-at time of the associated entity. */
+  editedAt: Scalars["DateTime"];
+};
+
+export type GqGenericKnowledgeNodePivot = {
+  /** The primary label of the category - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+};
+
+/** @deprecated - use GenericItemWithScore instead. */
+export type GqGenericSimilarItem = {
+  /** The similarity score between this mem and the query mem. */
+  score: Scalars["Float"];
+};
+
+export enum GqGoogleOAuthClient {
+  MemWebClient = "MEM_WEB_CLIENT",
+  MemAdminPortal = "MEM_ADMIN_PORTAL",
+  MemIos = "MEM_IOS",
+}
+
 /** Details about the server's health. */
 export type GqHealthCheckDetails = {
   __typename?: "HealthCheckDetails";
@@ -177,8 +981,712 @@ export type GqHealthCheckDetails = {
   postgresStatus: Scalars["Boolean"];
   /** Queries the firestore database to ensure it is working. */
   firestoreStatus: Scalars["Boolean"];
+  /** Queries the redis cache to ensure it is working. */
+  redisStatus: Scalars["Boolean"];
   /** Details regarding the server's build/deployment/environment/.. */
   serverInfo: GqServerInfo;
+};
+
+export type GqImportMemsInput = {
+  /** The file(.zip/.enex) that contains the notes. */
+  file: Scalars["Upload"];
+  /** The source of the imported notes. */
+  importKind: GqMemCreationImportSourceKind;
+};
+
+export type GqImportMemsPayload = {
+  __typename?: "ImportMemsPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalAccountKnowledgeNodeDetails = {
+  __typename?: "InternalAccountKnowledgeNodeDetails";
+  /**
+   * The unique identifier of the associated firestore user.
+   * (Fetching data for these users should be done as a separate query.)
+   */
+  firestoreUserId: Maybe<Scalars["String"]>;
+  /** Unique identifier of the account. */
+  accountId: Scalars["Uuid"];
+  /** The email of the account. */
+  email: Scalars["String"];
+  /** The display name of the account. */
+  profileDisplayName: Scalars["String"];
+  /** The profile photo url of the account. */
+  profileImageUrl: Scalars["String"];
+  /** The list of accounts permitted to view the account knowledge node. */
+  permittedAccountIds: Array<Scalars["Uuid"]>;
+  /** The list of users permitted to view the account knowledge node. */
+  permittedFirestoreUserIds: Array<Scalars["String"]>;
+};
+
+export type GqInternalCloseAccountInput = {
+  /** The identifier for the account which should be closed. */
+  accountId: Scalars["Uuid"];
+};
+
+export type GqInternalCloseAccountPayload = {
+  __typename?: "InternalCloseAccountPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalCreateUserAppNotificationForAllUsersInput = {
+  /** The date for when users should be notified for this particular notification. */
+  notifyStart: Scalars["DateTime"];
+  /** The date for when users should stop being notified (assuming they haven't closed the notification yet). */
+  notifyEnd: Scalars["DateTime"];
+  /** The identifier for the particular notification. */
+  notificationId: Scalars["String"];
+};
+
+export type GqInternalCreateUserAppNotificationForAllUsersPayload = {
+  __typename?: "InternalCreateUserAppNotificationForAllUsersPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalCreateUserAppNotificationInput = {
+  /** The date for when users should be notified for this particular notification. */
+  notifyStart: Scalars["DateTime"];
+  /** The date for when users should stop being notified (assuming they haven't closed the notification yet). */
+  notifyEnd: Scalars["DateTime"];
+  /** The identifier for the user. */
+  userId: Scalars["String"];
+  /** The identifier for the particular notification. */
+  notificationId: Scalars["String"];
+};
+
+export type GqInternalCreateUserAppNotificationPayload = {
+  __typename?: "InternalCreateUserAppNotificationPayload";
+  /** The identifier for the created or duplicate user app notification. */
+  userAppNotificationId: Scalars["String"];
+  /** Whether the user app notification was a duplicate. */
+  isDuplicate: Scalars["Boolean"];
+};
+
+export type GqInternalCreateVersionLaunchShowcaseAppNotificationInput = {
+  /** The details required to create the app notification. */
+  details: GqVersionLaunchShowcaseAppNotificationDetails;
+};
+
+export type GqInternalCreateVersionLaunchShowcaseAppNotificationPayload = {
+  __typename?: "InternalCreateVersionLaunchShowcaseAppNotificationPayload";
+  /** The identifier for the created app notification. */
+  appNotificationId: Scalars["String"];
+};
+
+export type GqInternalDisableAccountFeatureToggleInput = {
+  /** The identifier for the target account. */
+  accountId: Scalars["Uuid"];
+  /** The slug for the target feature toggle.. */
+  featureToggleSlug: GqFeatureToggleSlug;
+};
+
+export type GqInternalDisableAccountFeatureTogglePayload = {
+  __typename?: "InternalDisableAccountFeatureTogglePayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+export type GqInternalEnableAccountFeatureToggleInput = {
+  /** The identifier for the target account. */
+  accountId: Scalars["Uuid"];
+  /** The slug for the target feature toggle.. */
+  featureToggleSlug: GqFeatureToggleSlug;
+};
+
+export type GqInternalEnableAccountFeatureTogglePayload = {
+  __typename?: "InternalEnableAccountFeatureTogglePayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+export type GqInternalEnableFeatureToggleForAllAccountWithEmailDomainInput = {
+  /** The domain name of the users emails that should be affected (everything after the @ symbol). */
+  domainName: Scalars["String"];
+  /** The feature toggle to enable or disable. */
+  featureToggleSlug: GqFeatureToggleSlug;
+  /** Boolean indicating whether to enable or disable feature flag. */
+  enable: Scalars["Boolean"];
+};
+
+export type GqInternalEnableFeatureToggleForAllAccountWithEmailDomainPayload = {
+  __typename?: "InternalEnableFeatureToggleForAllAccountWithEmailDomainPayload";
+  /** Whether the flag was successful. */
+  success: Scalars["Boolean"];
+  /** The updated accounts. */
+  accounts: Array<GqAccount>;
+};
+
+export type GqInternalFactKnowledgeNodeDetails = {
+  __typename?: "InternalFactKnowledgeNodeDetails";
+  /** The unique identifier of the associated fact. */
+  factId: Scalars["Uuid"];
+  /** The unique identifier of the mem associated to this fact. */
+  associatedMemId: Scalars["Uuid"];
+  /** The content associated with the fact in different formats. */
+  content: Maybe<GqFactKnowledgeNodeContent>;
+  /** The type of the fact.  E.g. numeric, email, url, etc ... */
+  type: GqFactType;
+};
+
+export type GqInternalFindOrImportAccountFromFirebaseAuthInput = {
+  /** The firebaseAuthEmail of the target firestore-user. */
+  firebaseAuthEmail: Scalars["String"];
+};
+
+export type GqInternalFindOrImportAccountFromFirebaseAuthPayload = {
+  __typename?: "InternalFindOrImportAccountFromFirebaseAuthPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The account which was found-or-imported. */
+  account: GqAccount;
+};
+
+export type GqInternalFindOrImportAccountFromFirestoreUserInput = {
+  /** The firestoreUserId of the target firestore-user. */
+  firestoreUserId: Scalars["String"];
+};
+
+export type GqInternalFindOrImportAccountFromFirestoreUserPayload = {
+  __typename?: "InternalFindOrImportAccountFromFirestoreUserPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The account which was found-or-imported. */
+  account: GqAccount;
+};
+
+export type GqInternalFindOrImportMemFromFirestoreNoteInput = {
+  /** The id of the target firestore-note. */
+  firestoreNoteId: Scalars["String"];
+};
+
+export type GqInternalFindOrImportMemFromFirestoreNotePayload = {
+  __typename?: "InternalFindOrImportMemFromFirestoreNotePayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The mem which was found-or-imported. */
+  mem: GqMem;
+};
+
+export type GqInternalGetAllFeatureTogglesPayload = {
+  __typename?: "InternalGetAllFeatureTogglesPayload";
+  /** All the feature toggles that exist. */
+  featureToggles: Array<GqFeatureToggleSlug>;
+};
+
+export type GqInternalIndexAccountUsingFirestoreUserIdInput = {
+  /** The identifier for the firestore user id. */
+  firestoreUserId: Scalars["String"];
+};
+
+export type GqInternalIndexAccountUsingFirestoreUserIdPayload = {
+  __typename?: "InternalIndexAccountUsingFirestoreUserIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalIndexAllMemsForAccountInput = {
+  /** The identifier for an associated account. */
+  accountId: Scalars["Uuid"];
+};
+
+export type GqInternalIndexAllMemsForAccountPayload = {
+  __typename?: "InternalIndexAllMemsForAccountPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalIndexGroupUsingFirestoreGroupIdInput = {
+  /** The identifier for the firestore group. */
+  firestoreGroupId: Scalars["String"];
+};
+
+export type GqInternalIndexGroupUsingFirestoreGroupIdPayload = {
+  __typename?: "InternalIndexGroupUsingFirestoreGroupIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalIndexMemUsingFirestoreNoteIdInput = {
+  /** The identifier for the firestore note id. */
+  firestoreNoteId: Scalars["String"];
+};
+
+export type GqInternalIndexMemUsingFirestoreNoteIdPayload = {
+  __typename?: "InternalIndexMemUsingFirestoreNoteIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalKnowledgeNodeDetails = {
+  __typename?: "InternalKnowledgeNodeDetails";
+  /** The internal object ID required by our search system. */
+  objectId: Scalars["String"];
+  /** The internal index version set by our search system. */
+  indexVersion: Scalars["Int"];
+  /** The index-at time version set by our search system. */
+  indexedAt: Scalars["DateTime"];
+  /**
+   * The kind of knowledge node (Mem, Account, ...).
+   * Used internally to resolve which kind of node should be returned.
+   * Clients shouldn't use this - they should use the __typename instead.
+   */
+  knowledgeNodeKind: Scalars["String"];
+  /** The created-at time of the associated entity. */
+  createdAt: Scalars["DateTime"];
+  /** The edited-at time of the associated entity. */
+  editedAt: Scalars["DateTime"];
+};
+
+export type GqInternalMemKnowledgeNodeDetails = {
+  __typename?: "InternalMemKnowledgeNodeDetails";
+  /**
+   * The unique identifier of the associated firestore note.
+   * (Fetching data for these notes should be done as a separate query.)
+   */
+  firestoreNoteId: Maybe<Scalars["String"]>;
+  /** The list of accounts permitted to view the mem knowledge node. */
+  permittedAccountIds: Array<Scalars["Uuid"]>;
+  /** The list of users permitted to view the mem knowledge node. */
+  permittedFirestoreUserIds: Array<Scalars["String"]>;
+  /** A list of account-ids which have the mem in their inbox. */
+  isInInboxForAccounts: Array<Scalars["Uuid"]>;
+  /** A list of account-ids which have the mem in their trash. */
+  isInTrashForAccounts: Array<Scalars["Uuid"]>;
+  /** A list of account-ids which have the mem on unread. */
+  isUnreadForAccounts: Array<Scalars["Uuid"]>;
+  /** The searchable plaintext used search system. Optional. */
+  searchablePlaintext: Maybe<Scalars["String"]>;
+  /**
+   * The unique identifier of the associated mem.
+   * (Fetching data for these mems should be done as a separate query.)
+   */
+  memId: Scalars["Uuid"];
+  /** The topics associated with the associated mem. */
+  topics: Array<GqTopic>;
+  /** The content associated with the mem in different formats. */
+  content: GqKnowledgeNodeContent;
+};
+
+export type GqInternalMemTemplateKnowledgeNodeDetails = {
+  __typename?: "InternalMemTemplateKnowledgeNodeDetails";
+  /** The unique identifier of the associated firestore template. */
+  firestoreTemplateId: Maybe<Scalars["String"]>;
+  /** The list of accounts permitted to view the mem template knowledge node. */
+  permittedAccountIds: Array<Scalars["Uuid"]>;
+  /** The list of users permitted to view the mem template knowledge node. */
+  permittedFirestoreUserIds: Array<Scalars["String"]>;
+  /** The searchable plaintext used in the search system. Optional. */
+  searchablePlaintext: Maybe<Scalars["String"]>;
+  /**
+   * The unique identifier of the associated mem template.
+   * (Fetching data for these mem templates should be done as a separate query.)
+   */
+  memTemplateId: Scalars["Uuid"];
+  /** The content associated with the mem template in different formats. */
+  content: GqKnowledgeNodeContent;
+};
+
+export type GqInternalMigrateAccountToNewEmailInput = {
+  /** The id of the account which should be updated. */
+  accountId: Scalars["Uuid"];
+  /** The new email address which the account should be associated with. */
+  email: Scalars["String"];
+};
+
+export type GqInternalMigrateAccountToNewEmailPayload = {
+  __typename?: "InternalMigrateAccountToNewEmailPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+/**
+ * The input type used when processing cloud tasks.
+ * Note that the inputs are a union of all possible input types.
+ * (CloudTaskAArgs U CloudTaskBArgs U CloudTaskCArgs U ...)
+ */
+export type GqInternalProcessCloudTaskInput = {
+  /** The kind of cloud task which should be processed. */
+  kind: GqCloudTaskKind;
+  /** A value which can be provided for health-check purposes. */
+  healthCheckValue: Maybe<Scalars["String"]>;
+  /** The identifier for an associated account. */
+  accountId: Maybe<Scalars["Uuid"]>;
+  /** The identifier for an associated mem. */
+  memId: Maybe<Scalars["Uuid"]>;
+  /** The identifier for an associated group. */
+  groupId: Maybe<Scalars["Uuid"]>;
+  /** The identifier for an associated firestore note. */
+  firestoreNoteId: Maybe<Scalars["String"]>;
+  /** The identifier for an associated firestore user. */
+  firestoreUserId: Maybe<Scalars["String"]>;
+  /** The slug representing the kind of tracked event. */
+  trackedEventSlug: Maybe<GqTrackedEventSlug>;
+  /** The DateTime which the event was tracked at. */
+  trackedEventDateTime: Maybe<Scalars["DateTime"]>;
+  /**
+   * Info associated with the tracked event.
+   * In the JSON format.
+   */
+  trackedEventInfoJson: Maybe<Scalars["String"]>;
+  /** An account id associated with the tracked event. */
+  associatedAccountId: Maybe<Scalars["Uuid"]>;
+  /** The start date to index mems which have a created date on/and after this specified date */
+  startDate: Maybe<Scalars["DateTime"]>;
+  /** The end date to index mems which have a created date on/and before this specified date */
+  endDate: Maybe<Scalars["DateTime"]>;
+  /** The date for when users should be notified for a particular notification. */
+  notifyStart: Maybe<Scalars["DateTime"]>;
+  /** The date for when users should stop being notified (assuming they haven't closed the notification yet). */
+  notifyEnd: Maybe<Scalars["DateTime"]>;
+  /** The identifier for a particular notification. */
+  notificationId: Maybe<Scalars["String"]>;
+  /** The limit of the batch of records to process. */
+  batchLimit: Maybe<Scalars["Int"]>;
+  /** The amount of records to skip on the current batch to process. */
+  batchOffset: Maybe<Scalars["Int"]>;
+  /** The firestore ids to be backfilled */
+  firestoreIds: Maybe<Array<Scalars["String"]>>;
+  /** The mem ids to be backfilled */
+  memIds: Maybe<Array<Scalars["String"]>>;
+  /** The identifier for an associated firestore template. */
+  firestoreTemplateId: Maybe<Scalars["String"]>;
+  /** The identifier for an associated batch import. */
+  importBatchId: Maybe<Scalars["Uuid"]>;
+  /** The identifier for an associated import task. */
+  importTaskId: Maybe<Scalars["Uuid"]>;
+  /** A boolean marking if the associated task is a backfill task. */
+  isBackfillTask: Maybe<Scalars["Boolean"]>;
+  /** A UUID associated with the parent cloud task.  (Used to track child processes) */
+  trackingId: Maybe<Scalars["String"]>;
+};
+
+export type GqInternalProcessCloudTaskPayload = {
+  __typename?: "InternalProcessCloudTaskPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalReindexAllMemsPayload = {
+  __typename?: "InternalReindexAllMemsPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalReprocessMemEntityInput = {
+  /** The uuid of the target mem. */
+  memId: Scalars["Uuid"];
+};
+
+export type GqInternalReprocessMemEntityPayload = {
+  __typename?: "InternalReprocessMemEntityPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalReprocessMemEntityUsingFirestoreNoteIdInput = {
+  /** The identifier for the firestore note id. */
+  firestoreNoteId: Scalars["String"];
+  /** The identifier for an associated account. */
+  accountId: Scalars["Uuid"];
+};
+
+export type GqInternalReprocessMemEntityUsingFirestoreNoteIdPayload = {
+  __typename?: "InternalReprocessMemEntityUsingFirestoreNoteIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalReprocessMemTemplateEntityUsingFirestoreTemplateIdInput = {
+  /** The identifier for the firestore template id. */
+  firestoreTemplateId: Scalars["String"];
+};
+
+export type GqInternalReprocessMemTemplateEntityUsingFirestoreTemplateIdPayload = {
+  __typename?: "InternalReprocessMemTemplateEntityUsingFirestoreTemplateIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalRunAdminFunctionInput = {
+  /** The identifier for the firestore note id. */
+  adminFunctionName: GqAdminFunctionName;
+};
+
+export type GqInternalRunAdminFunctionPayload = {
+  __typename?: "InternalRunAdminFunctionPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** A UUID associated with the admin function.  (Used to track child processes) */
+  trackingId: Maybe<Scalars["String"]>;
+};
+
+export type GqInternalSearchAccountApiKeysFilters = {
+  /** Include API Keys which belong to the target account. */
+  accountId: Maybe<Scalars["Uuid"]>;
+  /** Include API Keys which have been revoked. */
+  includeRevoked: Maybe<Scalars["Boolean"]>;
+};
+
+export type GqInternalSearchAccountsFilters = {
+  /** Include Accounts which are related to the queryString. */
+  queryString: Maybe<Scalars["String"]>;
+};
+
+export type GqInternalSearchKnowledgeGraphFilters = {
+  /** The query string. */
+  queryString: Maybe<Scalars["String"]>;
+  /** Filter by mems which the target account has access to. */
+  accountId: Maybe<Scalars["Uuid"]>;
+  /** Facets which should be exposed by the search. */
+  filterableFacetKinds: Maybe<Array<GqKnowledgeGraphFacetKind>>;
+  /** The facet and value of the facet to filter by. */
+  facetFilters: Maybe<Array<GqKnowledgeGraphFacetFilter>>;
+  /** The kinds of entities to be retrieved by the search. */
+  entityKindsToRetrieve: Maybe<Array<GqKnowledgeNodeSearchObjectKind>>;
+};
+
+export type GqInternalSearchWorkspacesFilters = {
+  /** Include Workspaces which are related to the queryString. */
+  queryString: Maybe<Scalars["String"]>;
+};
+
+export type GqInternalSendSearchAnalyticsInput = {
+  /** The identifier for an associated account. */
+  accountId: Scalars["Uuid"];
+  /**
+   * The name of the analytic event.
+   *
+   * @todo we should make this an enum.
+   */
+  eventName: Scalars["String"];
+  /** The identifiers of the entities that were clicked. */
+  entityIds: Array<Scalars["Uuid"]>;
+  /** The identifier for the specified query */
+  queryId: Maybe<Scalars["String"]>;
+};
+
+export type GqInternalSendSearchAnalyticsPayload = {
+  __typename?: "InternalSendSearchAnalyticsPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqInternalTransitoryKnowledgeGraphFilters = {
+  /** The query string. */
+  queryString: Maybe<Scalars["String"]>;
+  /** Filter by mems which the target account has access to. */
+  accountId: Maybe<Scalars["Uuid"]>;
+  /** Facets which should be exposed by the search. */
+  filterableFacetKinds: Maybe<Array<GqKnowledgeGraphFacetKind>>;
+  /** The facet and value of the facet to filter by. */
+  facetFilters: Maybe<Array<GqKnowledgeGraphFacetFilter>>;
+  /** The kinds of entities to be retrieved by the search. */
+  entityKindsToRetrieve: Maybe<Array<GqKnowledgeNodeSearchObjectKind>>;
+};
+
+/** We can add more types here in the future. */
+export type GqItemWithScore = GqMemWithScore;
+
+/** Extra filterable facets @todo, find a better way to do this */
+export enum GqKnowledgeGraphAttributesForFaceting {
+  PermittedFirestoreUserIds = "permittedFirestoreUserIds",
+  PermittedFirestoreUserIdsString = "permittedFirestoreUserIdsString",
+}
+
+export type GqKnowledgeGraphFacet = {
+  __typename?: "KnowledgeGraphFacet";
+  /** The kind of search facet that the values are associated with. */
+  kind: GqKnowledgeGraphFacetKind;
+  /** The display name used for the kind of search facet. */
+  displayName: Scalars["String"];
+  /** The related values for the search facet. */
+  values: Array<Scalars["AnyJsonValue"]>;
+};
+
+export type GqKnowledgeGraphFacetFilter = {
+  /** Facet to filter with. */
+  kind: GqKnowledgeGraphFacetKind;
+  /** Whether to exclude the records with the facet value.  Setting to true will return records that do NOT have the specified facet value. */
+  exclude: Maybe<Scalars["Boolean"]>;
+  /** The value to filter by for the particular facet. */
+  value: Scalars["AnyJsonValue"];
+};
+
+/** Filterable facets for our knowledge graph. */
+export enum GqKnowledgeGraphFacetKind {
+  KnowledgeNodeKind = "KNOWLEDGE_NODE_KIND",
+  TopicLabels = "TOPIC_LABELS",
+  PermittedGroups = "PERMITTED_GROUPS",
+  EditedByUsers = "EDITED_BY_USERS",
+  LinkKinds = "LINK_KINDS",
+  MediaKinds = "MEDIA_KINDS",
+  CapturedWithSources = "CAPTURED_WITH_SOURCES",
+  IsInInboxForAccounts = "IS_IN_INBOX_FOR_ACCOUNTS",
+  IsInTrashForAccounts = "IS_IN_TRASH_FOR_ACCOUNTS",
+  IsUnreadForAccounts = "IS_UNREAD_FOR_ACCOUNTS",
+  CreatedByAccount = "CREATED_BY_ACCOUNT",
+  PermittedFirestoreGroupsAndUsers = "PERMITTED_FIRESTORE_GROUPS_AND_USERS",
+  LastEditedByAccountId = "LAST_EDITED_BY_ACCOUNT_ID",
+}
+
+export type GqKnowledgeGraphFacetsLimitOffsetConnection = {
+  __typename?: "KnowledgeGraphFacetsLimitOffsetConnection";
+  /** A list of nodes. */
+  nodes: Array<GqKnowledgeNodeFacet>;
+  /** Information to aid in pagination. */
+  pageInfo: GqLimitOffsetPageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars["Int"];
+};
+
+/**
+ * The limit-offset-connection type for KnowledgeGraphNode.
+ * @deprecated(reason: "Use KnowledgeNodesLimitOffsetConnection instead.")
+ */
+export type GqKnowledgeGraphLimitOffsetConnection = {
+  __typename?: "KnowledgeGraphLimitOffsetConnection";
+  /** A list of nodes. */
+  nodes: Array<GqKnowledgeNode>;
+  /** Information to aid in pagination. */
+  pageInfo: GqLimitOffsetPageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars["Int"];
+  /** Extra information related to the current search. */
+  searchInfo: GqKnowledgeGraphSearchInfo;
+};
+
+export enum GqKnowledgeGraphRecommendedActionType {
+  OpenMem = "OPEN_MEM",
+}
+
+export type GqKnowledgeGraphRecommendedNodes = {
+  __typename?: "KnowledgeGraphRecommendedNodes";
+  /** A recommended node */
+  node: GqKnowledgeNode;
+  /** The label explaining where the recommendation comes from. */
+  label: Scalars["String"];
+  /** The action related to the node */
+  actionType: GqKnowledgeGraphRecommendedActionType;
+};
+
+/** @deprecated(reason: "Use KnowledgeNodesSearchInfo instead.") */
+export type GqKnowledgeGraphSearchInfo = {
+  __typename?: "KnowledgeGraphSearchInfo";
+  /** A unique identifier for the query. */
+  queryId: Scalars["String"];
+  /** Facets */
+  facets: Array<GqKnowledgeGraphFacet>;
+};
+
+export type GqKnowledgeNode =
+  | GqMemKnowledgeNode
+  | GqAccountKnowledgeNode
+  | GqMemTemplateKnowledgeNode
+  | GqFactKnowledgeNode;
+
+/**
+ * In the future, we should consider turning this into a union type with "common topics", "mentions the word", ...
+ * @deprecated - "Use KnowledgeNodePivot instead."
+ */
+export type GqKnowledgeNodeCategory = {
+  __typename?: "KnowledgeNodeCategory";
+  /** The primary label of the category - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** Search for related knowledge nodes. */
+  searchKnowledgeNodes: GqKnowledgeNodesLimitOffsetConnection;
+};
+
+/**
+ * In the future, we should consider turning this into a union type with "common topics", "mentions the word", ...
+ * @deprecated - "Use KnowledgeNodePivot instead."
+ */
+export type GqKnowledgeNodeCategorySearchKnowledgeNodesArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+};
+
+/**
+ * The limit-offset-connection type for KnowledgeGraphNode.
+ * @deprecated - "Use KnowledgeNodePivotLimitOffsetConnection instead."
+ */
+export type GqKnowledgeNodeCategoryLimitOffsetConnection = {
+  __typename?: "KnowledgeNodeCategoryLimitOffsetConnection";
+  /** A list of nodes. */
+  nodes: Array<GqKnowledgeNodeCategory>;
+  /** Information to aid in pagination. */
+  pageInfo: GqLimitOffsetPageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export type GqKnowledgeNodeContent = {
+  __typename?: "KnowledgeNodeContent";
+  /** Content in the `Rich Text Delta` format. */
+  richTextDocument: Scalars["RichTextDocument"];
+  /** Content in the plaintext format. */
+  plaintext: Scalars["String"];
+  /** Content in the rich-clipboard style format. */
+  htmlString: Scalars["String"];
+};
+
+export type GqKnowledgeNodeFacet = {
+  __typename?: "KnowledgeNodeFacet";
+  /** The primary label - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+};
+
+export type GqKnowledgeNodePivot = GqTopicKnowledgeNodePivot | GqSimilarItemsKnowledgeNodePivot;
+
+/** The limit-offset-connection type for KnowledgeNodePivotLimitOffsetConnection. */
+export type GqKnowledgeNodePivotLimitOffsetConnection = {
+  __typename?: "KnowledgeNodePivotLimitOffsetConnection";
+  /** A list of nodes. */
+  nodes: Array<GqKnowledgeNodePivot>;
+  /** Information to aid in pagination. */
+  pageInfo: GqLimitOffsetPageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export enum GqKnowledgeNodeSearchObjectKind {
+  Mem = "MEM",
+  Account = "ACCOUNT",
+  Group = "GROUP",
+  MemTemplate = "MEM_TEMPLATE",
+  Fact = "FACT",
+}
+
+/** The limit-offset-connection type for KnowledgeGraphNode. */
+export type GqKnowledgeNodesLimitOffsetConnection = {
+  __typename?: "KnowledgeNodesLimitOffsetConnection";
+  /** A list of nodes. */
+  nodes: Array<GqKnowledgeNode>;
+  /** Information to aid in pagination. */
+  pageInfo: GqLimitOffsetPageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export type GqLimitOffsetPageInfo = {
+  __typename?: "LimitOffsetPageInfo";
+  /** When paginating forwards, the offset to start with. */
+  endOffset: Maybe<Scalars["Int"]>;
+  /** When paginating backwards, the offset to end with. */
+  startOffset: Maybe<Scalars["Int"]>;
+  /** When paginating forwards, are there more items? */
+  hasNextPage: Scalars["Boolean"];
+  /** When paginating backwards, are there more items? */
+  hasPreviousPage: Scalars["Boolean"];
 };
 
 /** A mem - our standard Rich-Text-Document entity. */
@@ -186,25 +1694,300 @@ export type GqMem = GqNode & {
   __typename?: "Mem";
   /** The unique identifier of the entity. */
   id: Scalars["Uuid"];
+  /**
+   * The url of the mem page.
+   *
+   * Example:
+   *   - https://mem.ai/m/abcdefghij0123456789
+   *
+   * Note that the mem's note identifier may be different from the mem's id.
+   */
+  url: Scalars["String"];
+  /** The title of the mem. */
+  title: Scalars["String"];
+  /** The tagline of the mem. */
+  tagline: Scalars["String"];
+  /** The topics associated with the mem. */
+  topics: Array<GqTopic>;
+  /** The content of the mem in different formats. */
+  content: GqMemContent;
+  /**
+   * The related firestore note.
+   * It may not always exist (so it is nullable).
+   */
+  firestoreNote: Maybe<GqFirestoreNote>;
+  /**
+   * The last time the note was edited.
+   * (Note that this is different than a generic "updatedAt" time)
+   */
+  editedAt: Scalars["DateTime"];
+  /**
+   * Metadata related to the note.
+   * Used for optimized rendering purposes on the client.
+   */
+  metadata: GqMemMetadata;
+  /** Mems mentioned inside the content. */
+  mentionedMems: Array<GqMem>;
+  /**
+   * Search knowledge node categories.
+   * @deprecated - "Use searchKnowledgeNodePivots instead."
+   * @deprecated Use searchKnowledgeNodePivots instead.
+   */
+  searchKnowledgeNodeCategories: GqKnowledgeNodeCategoryLimitOffsetConnection;
+  /** Search knowledge node categories. */
+  searchKnowledgeNodePivots: GqKnowledgeNodePivotLimitOffsetConnection;
+  /** The comment threads associated with the mem. */
+  commentThreads: Array<GqCommentThread>;
 };
 
+/** A mem - our standard Rich-Text-Document entity. */
+export type GqMemSearchKnowledgeNodeCategoriesArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+};
+
+/** A mem - our standard Rich-Text-Document entity. */
+export type GqMemSearchKnowledgeNodePivotsArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+};
+
+export type GqMemAccountFavoriteItem = GqGenericAccountFavoriteItem & {
+  __typename?: "MemAccountFavoriteItem";
+  /** String describing the item. */
+  label: Scalars["String"];
+  /** The item value. */
+  value: GqMem;
+};
+
+export type GqMemContent = {
+  __typename?: "MemContent";
+  /** Content in the `Rich Text Delta` format. */
+  richTextDocument: Scalars["RichTextDocument"];
+  /** Content in a JSON-ified quill delta format (encoded as a string). */
+  quillDeltaJson: Scalars["String"];
+  /** Content in a JSON-ified quill delta format. */
+  quillDeltaJsonObject: Scalars["AnyJsonObject"];
+  /** Content in a stringified markdown format. */
+  markdown: Scalars["String"];
+  /**
+   * The version of the mem's content.
+   * Used for syncing.
+   */
+  version: Scalars["Int"];
+};
+
+export enum GqMemCreationImportSourceKind {
+  Notion = "Notion",
+  Obsidian = "Obsidian",
+  Markdown = "Markdown",
+  Roam = "Roam",
+  AppleNotes = "AppleNotes",
+  Bear = "Bear",
+  IaWriter = "IAWriter",
+  Evernote = "Evernote",
+}
+
+export enum GqMemCreationSourceKind {
+  App = "App",
+  Import = "Import",
+  Sms = "Sms",
+  Api = "API",
+  Unknown = "Unknown",
+}
+
+/** This is deprecated, and should no longer be used. */
 export enum GqMemFormat {
   Markdown = "MARKDOWN",
 }
 
+export type GqMemKnowledgeNode = GqGenericKnowledgeNode & {
+  __typename?: "MemKnowledgeNode";
+  /** Internal mem-specific details related to the knowledge node. */
+  internalKnowledgeNodeDetails: GqInternalKnowledgeNodeDetails;
+  /** Internal mem-specific details related to the search system. */
+  internalMemKnowledgeNodeDetails: GqInternalMemKnowledgeNodeDetails;
+  /** The primary label - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** The secondary label - used for displaying search results. Optional. */
+  secondaryLabel: Maybe<Scalars["String"]>;
+  /**
+   * The unique identifier of the associated mem.
+   * (Fetching data for these mems should be done as a separate query.)
+   */
+  memId: Scalars["Uuid"];
+  /** The topics associated with the associated mem. */
+  topics: Array<GqTopic>;
+  /** The created-at time of the associated mem. */
+  createdAt: Scalars["DateTime"];
+  /** The edited-at time of the associated mem. */
+  editedAt: Scalars["DateTime"];
+};
+
+export type GqMemMetadata = {
+  __typename?: "MemMetadata";
+  /** A list of display names which are associated with the note's authors. */
+  authorProfileDisplayNames: Array<Scalars["String"]>;
+  /** A label containing authors and creation date. */
+  authorsLabel: Scalars["String"];
+};
+
+export type GqMemSimilarItem = GqGenericSimilarItem & {
+  __typename?: "MemSimilarItem";
+  /** The similarity score between this mem and the query mem. */
+  score: Scalars["Float"];
+  /** The associated MemKnowledgeNode. */
+  value: GqMemKnowledgeNode;
+};
+
+export type GqMemTemplateKnowledgeNode = GqGenericKnowledgeNode & {
+  __typename?: "MemTemplateKnowledgeNode";
+  /** Internal mem template-specific details related search system. */
+  internalKnowledgeNodeDetails: GqInternalKnowledgeNodeDetails;
+  /** Internal mem template-specific details related to the search system. */
+  internalMemTemplateKnowledgeNodeDetails: GqInternalMemTemplateKnowledgeNodeDetails;
+  /** The primary label - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** The secondary label - used for displaying search results. Optional. */
+  secondaryLabel: Maybe<Scalars["String"]>;
+  /** The created-at time of the associated mem template. */
+  createdAt: Scalars["DateTime"];
+  /** The edited-at time of the associated mem template. */
+  editedAt: Scalars["DateTime"];
+};
+
+export type GqMemWithScore = GqGenericItemWithScore & {
+  __typename?: "MemWithScore";
+  /** The similarity score between this mem and the query mem. */
+  score: Scalars["Float"];
+  /** The associated MemKnowledgeNode. */
+  value: GqMemKnowledgeNode;
+};
+
 export type GqMutation = {
   __typename?: "Mutation";
-  _empty: Maybe<Scalars["String"]>;
   /** Create a new Account API key. */
   createAccountApiKey: GqCreateAccountApiKeyPayload;
   /** Updates an existing Account API key's details. */
   updateAccountApiKeyDetails: GqUpdateAccountApiKeyDetailsPayload;
   /** Revoke an existing Account API Key. */
   revokeAccountApiKey: GqRevokeAccountApiKeyPayload;
+  /**
+   * Update an account's details.
+   *
+   * Right now you can only modify the account's profile picture.
+   */
+  updateAccountDetails: GqUpdateAccountDetailsPayload;
+  /** Update the location policy. */
+  updateAccountPreferences: GqUpdateAccountPreferencesPayload;
+  /** Add a favorite item to the current account. */
+  addAccountFavoriteItem: GqAddAccountFavoriteItemPayload;
+  /** Delete a favorite item from the current account. */
+  deleteAccountFavoriteItem: GqDeleteAccountFavoriteItemPayload;
+  /** Authenticate using an email and password. */
+  authenticateAccountUsingEmailPassword: GqAuthenticateUsingEmailPasswordPayload;
+  /** Authenticate using a Google OAuth code from various clients. */
+  authenticateAccountUsingGoogleOAuthCode: GqAuthenticateAccountUsingGoogleOAuthCodePayload;
+  _empty: Maybe<Scalars["String"]>;
   /** Create a new Mem. */
   createMem: GqCreateMemPayload;
   /** Create a new Mem. */
   batchCreateMems: Array<GqCreateMemPayload>;
+  /** Appends to an existing mem. */
+  appendToMemContent: GqAppendToMemContentPayload;
+  /** Appends to a batch of existing mems. */
+  batchAppendToMemContent: Array<GqAppendToMemContentPayload>;
+  /** Syncs a mem's updated content with an existing mem. */
+  syncMemContent: GqSyncMemContentPayload;
+  /** Transform's a mem's content by applying some operations. */
+  transformMemContent: GqTransformMemContentPayload;
+  /** Delete a mem. */
+  softDeleteMem: GqSoftDeleteMemPayload;
+  /** Save to mem(MemIt). */
+  saveToMem: GqSaveToMemPayload;
+  /** Import mems. */
+  importMems: GqImportMemsPayload;
+  /** Given a firebase-auth's details, we find or import the corresponding account. */
+  internalFindOrImportAccountFromFirebaseAuth: GqInternalFindOrImportAccountFromFirebaseAuthPayload;
+  /**
+   * Archives the account, then "hard-deletes" all of the
+   * associated models/objects. (firebase user, etc.)
+   *
+   * Irrecoverable.
+   */
+  internalCloseAccount: GqInternalCloseAccountPayload;
+  /** Processes a client event based on its kind */
+  recordClientEvent: GqRecordClientEventPayload;
+  /** Processes a client event based on its kind */
+  internalProcessCloudTask: GqInternalProcessCloudTaskPayload;
+  /** Given a firebase-note's details, we find or import the corresponding mem. */
+  internalFindOrImportMemFromFirestoreNote: GqInternalFindOrImportMemFromFirestoreNotePayload;
+  /** Re-pr */
+  internalReprocessMemEntity: GqInternalReprocessMemEntityPayload;
+  /** Re-pr */
+  internalReprocessMemEntityUsingFirestoreNoteId: GqInternalReprocessMemEntityUsingFirestoreNoteIdPayload;
+  /** Enables a feature toggle for an account. */
+  internalEnableAccountFeatureToggle: GqInternalEnableAccountFeatureTogglePayload;
+  /** Disables a feature toggle for an account. */
+  internalDisableAccountFeatureToggle: GqInternalDisableAccountFeatureTogglePayload;
+  /** Indexes a mem using a firestore note id. */
+  internalIndexMemUsingFirestoreNoteId: GqInternalIndexMemUsingFirestoreNoteIdPayload;
+  /**
+   * Reprocess the target mem entity associated to the provided
+   * firestore note.
+   */
+  transitoryReprocessMemEntityUsingFirestoreNoteId: GqTransitoryReprocessMemEntityUsingFirestoreNoteIdPayload;
+  /** Indexes all mems for an account. */
+  internalIndexAllMemsForAccount: GqInternalIndexAllMemsForAccountPayload;
+  /** Create a notification for a particular user. */
+  internalCreateUserAppNotification: GqInternalCreateUserAppNotificationPayload;
+  /** Create an app notification with the provided input. */
+  internalCreateVersionLaunchShowcaseAppNotification: GqInternalCreateVersionLaunchShowcaseAppNotificationPayload;
+  /** Create a version launch showcase notification for all users. */
+  internalCreateUserAppNotificationForAllUsers: GqInternalCreateUserAppNotificationForAllUsersPayload;
+  /** Search the knowledge graph associated with the account. */
+  internalCacheSet: GqCacheSetResults;
+  /** Indexes all mems. */
+  internalReindexAllMems: GqInternalReindexAllMemsPayload;
+  internalRunAdminFunction: GqInternalRunAdminFunctionPayload;
+  /** Given a firebase-note's id, we archive the note */
+  internalArchiveMem: GqInternalArchiveMemPayload;
+  /** Sends analytics events to Algolia. */
+  internalSendSearchAnalytics: GqInternalSendSearchAnalyticsPayload;
+  /** Migrate an account to a new email address. */
+  internalMigrateAccountToNewEmail: GqInternalMigrateAccountToNewEmailPayload;
+  /** Update a mem's AccountInboxDetails. */
+  updateAccountMemInboxDetails: GqUpdateAccountMemInboxDetailsPayload;
+  /** Indexes an account using a firestore user id. */
+  internalIndexAccountUsingFirestoreUserId: GqInternalIndexAccountUsingFirestoreUserIdPayload;
+  /** Indexes a group using a group id. */
+  internalIndexGroupUsingFirestoreGroupId: GqInternalIndexGroupUsingFirestoreGroupIdPayload;
+  /** Upload a file to the server. */
+  uploadFile: GqUploadFilePayload;
+  /** Re-pr */
+  internalReprocessMemTemplateEntityUsingFirestoreTemplateId: GqInternalReprocessMemTemplateEntityUsingFirestoreTemplateIdPayload;
+  /**
+   * Index the target mem entity associated to the provided
+   * firestore note.
+   */
+  transitoryIndexMemEntityUsingFirestoreNoteId: GqTransitoryIndexMemEntityUsingFirestoreNoteIdPayload;
+  /** Given a firestore user's details, we find or import the corresponding account. */
+  internalFindOrImportAccountFromFirestoreUser: GqInternalFindOrImportAccountFromFirestoreUserPayload;
+  /** Given a firebase-note's id, we update the mem's trash state in the search service */
+  internalUpdateMemTrashState: GqInternalUpdateMemTrashStatePayload;
+  /**
+   * Reprocess the target account entity associated to the provided
+   * firestore user.
+   */
+  transitoryReprocessAccountEntityUsingFirestoreUserId: GqTransitoryReprocessAccountEntityUsingFirestoreUserIdPayload;
+  /** Given a firebase-account's id, we archive the account */
+  internalArchiveAccount: GqInternalArchiveAccountPayload;
+  /** Creates a new workspace. */
+  createWorkspace: GqCreateWorkspacePayload;
+  /** Delete all mems associated with an AccountBatchImport. */
+  deleteAccountBatchImportMems: GqDeleteAccountBatchImportMemsPayload;
+  /** Enables the feature flag for all the members with a certain email domain */
+  internalEnableFeatureToggleForAllAccountWithEmailDomain: GqInternalEnableFeatureToggleForAllAccountWithEmailDomainPayload;
 };
 
 export type GqMutationCreateAccountApiKeyArgs = {
@@ -219,6 +2002,30 @@ export type GqMutationRevokeAccountApiKeyArgs = {
   input: GqRevokeAccountApiKeyInput;
 };
 
+export type GqMutationUpdateAccountDetailsArgs = {
+  input: GqUpdateAccountDetailsInput;
+};
+
+export type GqMutationUpdateAccountPreferencesArgs = {
+  input: GqUpdateAccountPreferencesInput;
+};
+
+export type GqMutationAddAccountFavoriteItemArgs = {
+  input: GqAddAccountFavoriteItemInput;
+};
+
+export type GqMutationDeleteAccountFavoriteItemArgs = {
+  input: GqDeleteAccountFavoriteItemInput;
+};
+
+export type GqMutationAuthenticateAccountUsingEmailPasswordArgs = {
+  input: GqAuthenticateUsingEmailPasswordInput;
+};
+
+export type GqMutationAuthenticateAccountUsingGoogleOAuthCodeArgs = {
+  input: GqAuthenticateAccountUsingGoogleOAuthCodeInput;
+};
+
 export type GqMutationCreateMemArgs = {
   input: GqCreateMemInput;
 };
@@ -227,32 +2034,255 @@ export type GqMutationBatchCreateMemsArgs = {
   inputs: Array<GqCreateMemInput>;
 };
 
+export type GqMutationAppendToMemContentArgs = {
+  input: GqAppendToMemContentInput;
+};
+
+export type GqMutationBatchAppendToMemContentArgs = {
+  inputs: Array<GqAppendToMemContentInput>;
+};
+
+export type GqMutationSyncMemContentArgs = {
+  input: GqSyncMemContentInput;
+};
+
+export type GqMutationTransformMemContentArgs = {
+  input: GqTransformMemContentInput;
+};
+
+export type GqMutationSoftDeleteMemArgs = {
+  input: GqSoftDeleteMemInput;
+};
+
+export type GqMutationSaveToMemArgs = {
+  input: GqSaveToMemInput;
+};
+
+export type GqMutationImportMemsArgs = {
+  input: GqImportMemsInput;
+};
+
+export type GqMutationInternalFindOrImportAccountFromFirebaseAuthArgs = {
+  input: GqInternalFindOrImportAccountFromFirebaseAuthInput;
+};
+
+export type GqMutationInternalCloseAccountArgs = {
+  input: GqInternalCloseAccountInput;
+};
+
+export type GqMutationRecordClientEventArgs = {
+  input: GqRecordClientEventInput;
+};
+
+export type GqMutationInternalProcessCloudTaskArgs = {
+  input: GqInternalProcessCloudTaskInput;
+};
+
+export type GqMutationInternalFindOrImportMemFromFirestoreNoteArgs = {
+  input: GqInternalFindOrImportMemFromFirestoreNoteInput;
+};
+
+export type GqMutationInternalReprocessMemEntityArgs = {
+  input: GqInternalReprocessMemEntityInput;
+};
+
+export type GqMutationInternalReprocessMemEntityUsingFirestoreNoteIdArgs = {
+  input: GqInternalReprocessMemEntityUsingFirestoreNoteIdInput;
+};
+
+export type GqMutationInternalEnableAccountFeatureToggleArgs = {
+  input: GqInternalEnableAccountFeatureToggleInput;
+};
+
+export type GqMutationInternalDisableAccountFeatureToggleArgs = {
+  input: GqInternalDisableAccountFeatureToggleInput;
+};
+
+export type GqMutationInternalIndexMemUsingFirestoreNoteIdArgs = {
+  input: GqInternalIndexMemUsingFirestoreNoteIdInput;
+};
+
+export type GqMutationTransitoryReprocessMemEntityUsingFirestoreNoteIdArgs = {
+  input: GqTransitoryReprocessMemEntityUsingFirestoreNoteIdInput;
+};
+
+export type GqMutationInternalIndexAllMemsForAccountArgs = {
+  input: GqInternalIndexAllMemsForAccountInput;
+};
+
+export type GqMutationInternalCreateUserAppNotificationArgs = {
+  input: GqInternalCreateUserAppNotificationInput;
+};
+
+export type GqMutationInternalCreateVersionLaunchShowcaseAppNotificationArgs = {
+  input: GqInternalCreateVersionLaunchShowcaseAppNotificationInput;
+};
+
+export type GqMutationInternalCreateUserAppNotificationForAllUsersArgs = {
+  input: GqInternalCreateUserAppNotificationForAllUsersInput;
+};
+
+export type GqMutationInternalCacheSetArgs = {
+  key: GqRedisKey;
+  value: Scalars["String"];
+};
+
+export type GqMutationInternalRunAdminFunctionArgs = {
+  input: GqInternalRunAdminFunctionInput;
+};
+
+export type GqMutationInternalArchiveMemArgs = {
+  input: GqInternalArchiveMemInput;
+};
+
+export type GqMutationInternalSendSearchAnalyticsArgs = {
+  input: GqInternalSendSearchAnalyticsInput;
+};
+
+export type GqMutationInternalMigrateAccountToNewEmailArgs = {
+  input: GqInternalMigrateAccountToNewEmailInput;
+};
+
+export type GqMutationUpdateAccountMemInboxDetailsArgs = {
+  input: GqUpdateAccountMemInboxDetailsInput;
+};
+
+export type GqMutationInternalIndexAccountUsingFirestoreUserIdArgs = {
+  input: GqInternalIndexAccountUsingFirestoreUserIdInput;
+};
+
+export type GqMutationInternalIndexGroupUsingFirestoreGroupIdArgs = {
+  input: GqInternalIndexGroupUsingFirestoreGroupIdInput;
+};
+
+export type GqMutationUploadFileArgs = {
+  input: GqUploadFileInput;
+};
+
+export type GqMutationInternalReprocessMemTemplateEntityUsingFirestoreTemplateIdArgs = {
+  input: GqInternalReprocessMemTemplateEntityUsingFirestoreTemplateIdInput;
+};
+
+export type GqMutationTransitoryIndexMemEntityUsingFirestoreNoteIdArgs = {
+  input: GqTransitoryIndexMemEntityUsingFirestoreNoteIdInput;
+};
+
+export type GqMutationInternalFindOrImportAccountFromFirestoreUserArgs = {
+  input: GqInternalFindOrImportAccountFromFirestoreUserInput;
+};
+
+export type GqMutationInternalUpdateMemTrashStateArgs = {
+  input: GqInternalUpdateMemTrashStateInput;
+};
+
+export type GqMutationTransitoryReprocessAccountEntityUsingFirestoreUserIdArgs = {
+  input: GqTransitoryReprocessAccountEntityUsingFirestoreUserIdInput;
+};
+
+export type GqMutationInternalArchiveAccountArgs = {
+  input: GqInternalArchiveAccountInput;
+};
+
+export type GqMutationCreateWorkspaceArgs = {
+  input: GqCreateWorkspaceInput;
+};
+
+export type GqMutationDeleteAccountBatchImportMemsArgs = {
+  input: GqDeleteAccountBatchImportMemsInput;
+};
+
+export type GqMutationInternalEnableFeatureToggleForAllAccountWithEmailDomainArgs = {
+  input: GqInternalEnableFeatureToggleForAllAccountWithEmailDomainInput;
+};
+
 /** An object with a universal ID (globally-unique). */
 export type GqNode = {
   /** The unique identifier of the entity. */
   id: Scalars["Uuid"];
 };
 
-/** Information about pagination in a connection. */
-export type GqPageInfo = {
-  __typename?: "PageInfo";
-  /** When paginating forwards, the cursor to continue. */
-  endCursor: Maybe<Scalars["Cursor"]>;
-  /** When paginating backwards, the cursor to continue. */
-  startCursor: Maybe<Scalars["Cursor"]>;
-  /** When paginating forwards, are there more items? */
-  hasNextPage: Scalars["Boolean"];
-  /** When paginating backwards, are there more items? */
-  hasPreviousPage: Scalars["Boolean"];
+export type GqPlatformFeature = {
+  __typename?: "PlatformFeature";
+  name: Scalars["String"];
+  kind: GqPlatformFeatureKind;
+  gate: GqPlatformFeatureGate;
 };
+
+/** Platform Feature Gate */
+export type GqPlatformFeatureGate = {
+  __typename?: "PlatformFeatureGate";
+  enabled: Scalars["Boolean"];
+  limit: Maybe<Scalars["Int"]>;
+  gateMessage: Maybe<Scalars["String"]>;
+  inboundUpgradeMessage: Maybe<Scalars["String"]>;
+  outboundUpgradePaths: Array<GqPlatformPlanKind>;
+};
+
+/** Platform Features */
+export enum GqPlatformFeatureKind {
+  Tags = "TAGS",
+  Templates = "TEMPLATES",
+  ConnectedEmails = "CONNECTED_EMAILS",
+  ConnectedCalendars = "CONNECTED_CALENDARS",
+  Texts = "TEXTS",
+  SmartSearch = "SMART_SEARCH",
+  SimilarMems = "SIMILAR_MEMS",
+  ApiKeys = "API_KEYS",
+  Zapier = "ZAPIER",
+  Groups = "GROUPS",
+  GroupMembers = "GROUP_MEMBERS",
+  FileStorage = "FILE_STORAGE",
+  FileUploads = "FILE_UPLOADS",
+}
+
+/** Platform Plans */
+export type GqPlatformPlan = {
+  __typename?: "PlatformPlan";
+  name: Scalars["String"];
+  kind: GqPlatformPlanKind;
+  /** Platform Features */
+  apiKeysFeature: GqPlatformFeature;
+  connectedCalendarsFeature: GqPlatformFeature;
+  connectedEmailsFeature: GqPlatformFeature;
+  fileStorageFeature: GqPlatformFeature;
+  fileUploadsFeature: GqPlatformFeature;
+  groupsFeature: GqPlatformFeature;
+  groupMembersFeature: GqPlatformFeature;
+  similarMemsFeature: GqPlatformFeature;
+  smartSearchFeature: GqPlatformFeature;
+  tagsFeature: GqPlatformFeature;
+  templatesFeature: GqPlatformFeature;
+  textsFeature: GqPlatformFeature;
+  zapierFeature: GqPlatformFeature;
+};
+
+export type GqPlatformPlanCatalog = {
+  __typename?: "PlatformPlanCatalog";
+  memFree: GqPlatformPlan;
+  memPro: GqPlatformPlan;
+  memX: GqPlatformPlan;
+  memTeams: GqPlatformPlan;
+};
+
+/** Platform Plans */
+export enum GqPlatformPlanKind {
+  MemFree = "MEM_FREE",
+  MemPro = "MEM_PRO",
+  MemX = "MEM_X",
+  MemTeams = "MEM_TEAMS",
+}
 
 export type GqQuery = {
   __typename?: "Query";
-  _empty: Maybe<Scalars["String"]>;
   /** Get an Account API Key by id. */
   getAccountApiKey: GqAccountApiKey;
-  /** Search for account api keys. */
-  searchAccountApiKeys: GqAccountApiKeyConnection;
+  /**
+   * Search for account api keys.
+   * This is deprecated...
+   * Use `internalSearchAccountApiKeys` instead.
+   * @deprecated Use `internalSearchAccountApiKeys` instead.
+   */
+  searchAccountApiKeys: GqAccountApiKeyCursorConnection;
   /**
    * Gets the currently authenticated account.
    * If there is not a currently authenticated account, this raises an error.
@@ -261,11 +2291,34 @@ export type GqQuery = {
   /** Get an Account by id. */
   getAccount: GqAccount;
   /** Search for account api keys. */
-  searchAccounts: GqAccountConnection;
+  searchAccounts: GqAccountCursorConnection;
   /** Server health-check details. */
   healthCheckDetails: GqHealthCheckDetails;
+  _empty: Maybe<Scalars["String"]>;
   /** Get a Mem by id. */
   getMem: GqMem;
+  /** Search the knowledge graph associated with the account. */
+  internalSearchKnowledgeGraph: GqKnowledgeGraphLimitOffsetConnection;
+  /** Get a Mem by the associated firestore note id. */
+  transitoryGetMemByFirestoreNoteId: GqMem;
+  /** Search the knowledge graph associated with the account. */
+  internalCacheGet: GqCacheGetResults;
+  /** Search for any account api keys. */
+  internalSearchAccountApiKeys: GqAccountApiKeyCursorConnection;
+  /** Search for any accounts. */
+  internalSearchAccounts: GqAccountLimitOffsetConnection;
+  /** Get a workspace by id. */
+  getWorkspace: GqWorkspace;
+  /** Search for any accounts. */
+  internalSearchWorkspaces: GqWorkspaceLimitOffsetConnection;
+  /** Get an AccountBatchImport by id. */
+  getAccountBatchImport: GqAccountBatchImport;
+  /** Search the knowledge graph associated with the account. */
+  internalTransitorySearchKnowledgeGraph: GqKnowledgeGraphLimitOffsetConnection;
+  /** Fetch the different available plans. */
+  platformPlanCatalog: GqPlatformPlanCatalog;
+  /** Returns all available feature toggles that exist. */
+  internalGetAllFeatureToggles: GqInternalGetAllFeatureTogglesPayload;
 };
 
 export type GqQueryGetAccountApiKeyArgs = {
@@ -296,6 +2349,82 @@ export type GqQueryGetMemArgs = {
   memId: Scalars["Uuid"];
 };
 
+export type GqQueryInternalSearchKnowledgeGraphArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqInternalSearchKnowledgeGraphFilters>;
+};
+
+export type GqQueryTransitoryGetMemByFirestoreNoteIdArgs = {
+  firestoreNoteId: Scalars["String"];
+};
+
+export type GqQueryInternalCacheGetArgs = {
+  queryString: GqRedisKey;
+};
+
+export type GqQueryInternalSearchAccountApiKeysArgs = {
+  after: Maybe<Scalars["Cursor"]>;
+  before: Maybe<Scalars["Cursor"]>;
+  first: Maybe<Scalars["Int"]>;
+  last: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqInternalSearchAccountApiKeysFilters>;
+};
+
+export type GqQueryInternalSearchAccountsArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqInternalSearchAccountsFilters>;
+};
+
+export type GqQueryGetWorkspaceArgs = {
+  workspaceId: Scalars["Uuid"];
+};
+
+export type GqQueryInternalSearchWorkspacesArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqInternalSearchWorkspacesFilters>;
+};
+
+export type GqQueryGetAccountBatchImportArgs = {
+  accountBatchImportId: Scalars["Uuid"];
+};
+
+export type GqQueryInternalTransitorySearchKnowledgeGraphArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+  filterBy: Maybe<GqInternalTransitoryKnowledgeGraphFilters>;
+};
+
+export type GqRecordClientEventInput = {
+  /** The kind of client event. */
+  kind: GqClientEventKind;
+  /** Details related to the event. */
+  clientEventInfo: Maybe<Scalars["AnyJsonObject"]>;
+  /** Details about the environment of the client. */
+  clientInfo: Maybe<Scalars["AnyJsonObject"]>;
+};
+
+export type GqRecordClientEventPayload = {
+  __typename?: "RecordClientEventPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqRecordMemInteractionLocationPolicyAccountPreference = {
+  __typename?: "RecordMemInteractionLocationPolicyAccountPreference";
+  /** Whether the preference is enabled. */
+  enabled: Scalars["Boolean"];
+};
+
+/** A list of common redis keys. */
+export enum GqRedisKey {
+  NotificationGenerationProgress = "NOTIFICATION_GENERATION_PROGRESS",
+  ReindexAllMemsInApiDbProgress = "REINDEX_ALL_MEMS_IN_API_DB_PROGRESS",
+  Ping = "PING",
+}
+
 export type GqRevokeAccountApiKeyInput = {
   /** The identifier for the Account API Key. */
   accountApiKeyId: Scalars["Uuid"];
@@ -307,6 +2436,35 @@ export type GqRevokeAccountApiKeyPayload = {
   success: Scalars["Boolean"];
 };
 
+export type GqSaveToMemInput = {
+  /** The identifier for the target Mem in case of update. If not provided, a new mem is created. */
+  memId: Maybe<Scalars["Uuid"]>;
+  /**
+   * The contents which should be appended to the existing mem.
+   * Must be in the markdown format.
+   *
+   * (Titles and tags are automatically parsed from the content.)
+   */
+  markdown: Maybe<Scalars["String"]>;
+  /**
+   * The contents which should be appended to the existing mem.
+   * Must be in the rich-text-document format.
+   */
+  richTextDocument: Maybe<Scalars["RichTextDocument"]>;
+};
+
+export type GqSaveToMemPayload = {
+  __typename?: "SaveToMemPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The Mem which was updated/created. */
+  mem: GqMem;
+};
+
+/**
+ * This is deprecated...
+ * Use `internalSearchAccountApiKeys` instead.
+ */
 export type GqSearchAccountApiKeysFilters = {
   /** Include API Keys which have been revoked. */
   includeRevoked: Maybe<Scalars["Boolean"]>;
@@ -314,7 +2472,21 @@ export type GqSearchAccountApiKeysFilters = {
 
 export type GqSearchAccountsFilters = {
   /** Include accounts which have been revoked. */
-  includeArchived: Maybe<Scalars["Boolean"]>;
+  includeSoftDeleted: Maybe<Scalars["Boolean"]>;
+};
+
+export type GqSearchQuery = {
+  __typename?: "SearchQuery";
+  /** The query for the search. */
+  query: Scalars["String"];
+};
+
+export type GqSearchQueryAccountFavoriteItem = GqGenericAccountFavoriteItem & {
+  __typename?: "SearchQueryAccountFavoriteItem";
+  /** String describing the item. */
+  label: Scalars["String"];
+  /** The item value. */
+  value: GqSearchQuery;
 };
 
 /** Details regarding the server's build/deployment/environment/... */
@@ -341,9 +2513,241 @@ export type GqServerInfo = {
   requestIdentifier: Scalars["Uuid"];
 };
 
+/** We can add more types here in the future. */
+export type GqSimilarItem = GqMemSimilarItem;
+
+export type GqSimilarItemsKnowledgeNodePivot = GqGenericKnowledgeNodePivot & {
+  __typename?: "SimilarItemsKnowledgeNodePivot";
+  /** The primary label of the category - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** @deprecated - use   itemsWithScore: [ItemWithScore!]! instead */
+  items: Array<GqSimilarItem>;
+};
+
+export type GqSoftDeleteMemInput = {
+  /** The identifier for the target Mem. */
+  memId: Scalars["Uuid"];
+};
+
+export type GqSoftDeleteMemPayload = {
+  __typename?: "SoftDeleteMemPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
 export type GqSubscription = {
   __typename?: "Subscription";
   _empty: Maybe<Scalars["String"]>;
+};
+
+export type GqSyncMemContentInput = {
+  /** The identifier for the target Mem. */
+  memId: Scalars["Uuid"];
+  /** The version of the last time the content was synced. */
+  lastSyncVersion: Scalars["Int"];
+  /**
+   * The contents which should replace the existing mem.
+   * Must be in the markdown format.
+   *
+   * (Titles and tags are automatically parsed from the content.)
+   */
+  markdown: Maybe<Scalars["String"]>;
+  /**
+   * The contents which should replace the existing mem.
+   * Must be in the rich-text-document format.
+   */
+  richTextDocument: Maybe<Scalars["RichTextDocument"]>;
+  /**
+   * An identifier for the client submitting the request.
+   * Optional, but recommended.
+   */
+  clientId: Maybe<Scalars["Uuid"]>;
+};
+
+export type GqSyncMemContentPayload = {
+  __typename?: "SyncMemContentPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The Mem which was updated. */
+  mem: GqMem;
+};
+
+export type GqTopic = {
+  __typename?: "Topic";
+  /**
+   * The label of the topic.
+   * For #meetings, the label would be `meetings`.
+   */
+  label: Scalars["String"];
+  /** The color of the topic. */
+  color: Scalars["Color"];
+};
+
+export type GqTopicAccountFavoriteItem = GqGenericAccountFavoriteItem & {
+  __typename?: "TopicAccountFavoriteItem";
+  /** String describing the item. */
+  label: Scalars["String"];
+  /** The item value. */
+  value: GqTopic;
+};
+
+export type GqTopicKnowledgeNodePivot = GqGenericKnowledgeNodePivot & {
+  __typename?: "TopicKnowledgeNodePivot";
+  /** The primary label of the category - used for displaying search results. */
+  primaryLabel: Scalars["String"];
+  /** Search for the pivot's knowledge nodes. */
+  searchKnowledgeNodes: GqKnowledgeNodesLimitOffsetConnection;
+};
+
+export type GqTopicKnowledgeNodePivotSearchKnowledgeNodesArgs = {
+  limit: Maybe<Scalars["Int"]>;
+  offset: Maybe<Scalars["Int"]>;
+};
+
+/** A list of valid tracked event slugs. */
+export enum GqTrackedEventSlug {
+  ExampleEvent = "EXAMPLE_EVENT",
+  PersonIndexed = "PERSON_INDEXED",
+  AccountIndexed = "ACCOUNT_INDEXED",
+  GroupIndexed = "GROUP_INDEXED",
+  MemTemplateIndexed = "MEM_TEMPLATE_INDEXED",
+  MemCreated = "MEM_CREATED",
+  MemContentAppended = "MEM_CONTENT_APPENDED",
+  MemContentSynced = "MEM_CONTENT_SYNCED",
+  MemContentTransformed = "MEM_CONTENT_TRANSFORMED",
+  MemIndexed = "MEM_INDEXED",
+  MemArchived = "MEM_ARCHIVED",
+  /** Generic */
+  MemIosAppBooted = "MEM_IOS_APP_BOOTED",
+  MemIosLoadPersistedAccountSuccess = "MEM_IOS_LOAD_PERSISTED_ACCOUNT_SUCCESS",
+  MemIosLoadPersistedAccountFailureNotFound = "MEM_IOS_LOAD_PERSISTED_ACCOUNT_FAILURE_NOT_FOUND",
+  MemIosAppOpened = "MEM_IOS_APP_OPENED",
+  /** Login */
+  MemIosLoginScreenViewed = "MEM_IOS_LOGIN_SCREEN_VIEWED",
+  MemIosLoginScreenAccountLoginSuccess = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_LOGIN_SUCCESS",
+  MemIosLoginScreenAccountLoginFailureNotFound = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_LOGIN_FAILURE_NOT_FOUND",
+  MemIosLoginScreenAccountLoginFailureUnknown = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_LOGIN_FAILURE_UNKNOWN",
+  MemIosLoginScreenSignInWithGoogleClicked = "MEM_IOS_LOGIN_SCREEN_SIGN_IN_WITH_GOOGLE_CLICKED",
+  MemIosLoginScreenLearnMoreClicked = "MEM_IOS_LOGIN_SCREEN_LEARN_MORE_CLICKED",
+  MemIosLoginScreenAccountNotFoundMustSignUpClicked = "MEM_IOS_LOGIN_SCREEN_ACCOUNT_NOT_FOUND_MUST_SIGN_UP_CLICKED",
+  /** Home */
+  MemIosHomeScreenViewed = "MEM_IOS_HOME_SCREEN_VIEWED",
+  MemIosHomeScreenLoadedResults = "MEM_IOS_HOME_SCREEN_LOADED_RESULTS",
+  MemIosHomeScreenSawNoResults = "MEM_IOS_HOME_SCREEN_SAW_NO_RESULTS",
+  MemIosHomeScreenLoadedMoreResults = "MEM_IOS_HOME_SCREEN_LOADED_MORE_RESULTS",
+  MemIosHomeScreenRefreshedResults = "MEM_IOS_HOME_SCREEN_REFRESHED_RESULTS",
+  MemIosHomeScreenSuggestionClicked = "MEM_IOS_HOME_SCREEN_SUGGESTION_CLICKED",
+  /** Search */
+  MemIosSearchScreenViewed = "MEM_IOS_SEARCH_SCREEN_VIEWED",
+  MemIosSearchScreenSearchExecuted = "MEM_IOS_SEARCH_SCREEN_SEARCH_EXECUTED",
+  MemIosSearchScreenSawNoResults = "MEM_IOS_SEARCH_SCREEN_SAW_NO_RESULTS",
+  MemIosSearchScreenLoadedMoreResults = "MEM_IOS_SEARCH_SCREEN_LOADED_MORE_RESULTS",
+  MemIosSearchScreenSuggestionClicked = "MEM_IOS_SEARCH_SCREEN_SUGGESTION_CLICKED",
+  MemIosSearchScreenOpenedFromNavigationBar = "MEM_IOS_SEARCH_SCREEN_OPENED_FROM_NAVIGATION_BAR",
+  MemIosSearchScreenOpenedFromHomeBar = "MEM_IOS_SEARCH_SCREEN_OPENED_FROM_HOME_BAR",
+  /** Share Sheet */
+  MemIosShareSheetViewed = "MEM_IOS_SHARE_SHEET_VIEWED",
+  /** Slice Results (Home + Search Views) */
+  MemIosSliceResultsItemClicked = "MEM_IOS_SLICE_RESULTS_ITEM_CLICKED",
+  /** Details */
+  MemIosDetailScreenViewed = "MEM_IOS_DETAIL_SCREEN_VIEWED",
+  MemIosDetailScreenMemEdited = "MEM_IOS_DETAIL_SCREEN_MEM_EDITED",
+  MemIosDetailScreenMemComposed = "MEM_IOS_DETAIL_SCREEN_MEM_COMPOSED",
+  MemIosDetailScreenTopicClicked = "MEM_IOS_DETAIL_SCREEN_TOPIC_CLICKED",
+  MemIosDetailScreenWebLinkClicked = "MEM_IOS_DETAIL_SCREEN_WEB_LINK_CLICKED",
+  MemIosDetailScreenLinkedFirestoreNoteClicked = "MEM_IOS_DETAIL_SCREEN_LINKED_FIRESTORE_NOTE_CLICKED",
+  MemIosDetailScreenMentionedFirestoreUserClicked = "MEM_IOS_DETAIL_SCREEN_MENTIONED_FIRESTORE_USER_CLICKED",
+  MemIosDetailScreenMentionedFirestoreGroupClicked = "MEM_IOS_DETAIL_SCREEN_MENTIONED_FIRESTORE_GROUP_CLICKED",
+  MemIosDetailScreenRelatedMemsViewed = "MEM_IOS_DETAIL_SCREEN_RELATED_MEMS_VIEWED",
+  /** Editing */
+  MemIosEditorCarouselCameraClicked = "MEM_IOS_EDITOR_CAROUSEL_CAMERA_CLICKED",
+  MemIosEditorCarouselPhotoClicked = "MEM_IOS_EDITOR_CAROUSEL_PHOTO_CLICKED",
+  MemIosEditorCarouselGalleryClicked = "MEM_IOS_EDITOR_CAROUSEL_GALLERY_CLICKED",
+  MemIosEditorToolbarGalleryClicked = "MEM_IOS_EDITOR_TOOLBAR_GALLERY_CLICKED",
+  MemIosEditorToolbarBulletedListClicked = "MEM_IOS_EDITOR_TOOLBAR_BULLETED_LIST_CLICKED",
+  MemIosEditorToolbarChecklistClicked = "MEM_IOS_EDITOR_TOOLBAR_CHECKLIST_CLICKED",
+  MemIosEditorToolbarAddTagClicked = "MEM_IOS_EDITOR_TOOLBAR_ADD_TAG_CLICKED",
+  MemIosEditorToolbarFormatClicked = "MEM_IOS_EDITOR_TOOLBAR_FORMAT_CLICKED",
+  MemIosEditorToolbarH1Clicked = "MEM_IOS_EDITOR_TOOLBAR_H1_CLICKED",
+  MemIosEditorToolbarH2Clicked = "MEM_IOS_EDITOR_TOOLBAR_H2_CLICKED",
+  MemIosEditorToolbarBoldClicked = "MEM_IOS_EDITOR_TOOLBAR_BOLD_CLICKED",
+  MemIosEditorToolbarItalicClicked = "MEM_IOS_EDITOR_TOOLBAR_ITALIC_CLICKED",
+  MemIosEditorToolbarUnderlineClicked = "MEM_IOS_EDITOR_TOOLBAR_UNDERLINE_CLICKED",
+  MemIosEditorToolbarStrikethroughClicked = "MEM_IOS_EDITOR_TOOLBAR_STRIKETHROUGH_CLICKED",
+  MemIosEditorToolbarCodeBlockClicked = "MEM_IOS_EDITOR_TOOLBAR_CODE_BLOCK_CLICKED",
+  MemIosEditorToolbarQuoteBlockClicked = "MEM_IOS_EDITOR_TOOLBAR_QUOTE_BLOCK_CLICKED",
+  MemIosEditorToolbarRemoveFormattingClicked = "MEM_IOS_EDITOR_TOOLBAR_REMOVE_FORMATTING_CLICKED",
+  /** Side Navigation */
+  MemIosSideNavigationViewed = "MEM_IOS_SIDE_NAVIGATION_VIEWED",
+  /** Help And Support */
+  MemIosSupportScreenViewed = "MEM_IOS_SUPPORT_SCREEN_VIEWED",
+  MemIosSupportScreenProductUpdatesClicked = "MEM_IOS_SUPPORT_SCREEN_PRODUCT_UPDATES_CLICKED",
+  MemIosSupportScreenFaqsClicked = "MEM_IOS_SUPPORT_SCREEN_FAQS_CLICKED",
+  MemIosSupportScreenTutorialsClicked = "MEM_IOS_SUPPORT_SCREEN_TUTORIALS_CLICKED",
+  MemIosSupportScreenBlogClicked = "MEM_IOS_SUPPORT_SCREEN_BLOG_CLICKED",
+  MemIosSupportScreenContactUsClicked = "MEM_IOS_SUPPORT_SCREEN_CONTACT_US_CLICKED",
+  /** Other Events */
+  MemIosAccountLoggedOut = "MEM_IOS_ACCOUNT_LOGGED_OUT",
+  /** Recommended */
+  EntitiesRecommended = "ENTITIES_RECOMMENDED",
+}
+
+export type GqTransformMemContentInput = {
+  /** The identifier for the target Mem. */
+  memId: Scalars["Uuid"];
+  /** The version of the last time the content was synced. */
+  lastSyncVersion: Scalars["Int"];
+  /**
+   * The contents which should replace the existing mem.
+   * Must be in the rich-text-delta format.
+   */
+  richTextDelta: Maybe<Scalars["RichTextDelta"]>;
+  /**
+   * An identifier for the client submitting the request.
+   * Optional, but recommended.
+   */
+  clientId: Maybe<Scalars["Uuid"]>;
+};
+
+export type GqTransformMemContentPayload = {
+  __typename?: "TransformMemContentPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The Mem which was updated. */
+  mem: GqMem;
+};
+
+export type GqTransitoryIndexMemEntityUsingFirestoreNoteIdInput = {
+  /** The identifier for the firestore note id. */
+  firestoreNoteId: Scalars["String"];
+};
+
+export type GqTransitoryIndexMemEntityUsingFirestoreNoteIdPayload = {
+  __typename?: "TransitoryIndexMemEntityUsingFirestoreNoteIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqTransitoryReprocessAccountEntityUsingFirestoreUserIdInput = {
+  /** The identifier for the firestore user id. */
+  firestoreUserId: Scalars["String"];
+};
+
+export type GqTransitoryReprocessAccountEntityUsingFirestoreUserIdPayload = {
+  __typename?: "TransitoryReprocessAccountEntityUsingFirestoreUserIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+};
+
+export type GqTransitoryReprocessMemEntityUsingFirestoreNoteIdInput = {
+  /** The identifier for the firestore note id. */
+  firestoreNoteId: Scalars["String"];
+};
+
+export type GqTransitoryReprocessMemEntityUsingFirestoreNoteIdPayload = {
+  __typename?: "TransitoryReprocessMemEntityUsingFirestoreNoteIdPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
 };
 
 export type GqUpdateAccountApiKeyDetailsInput = {
@@ -360,6 +2764,168 @@ export type GqUpdateAccountApiKeyDetailsPayload = {
   /** The API key that was updated. */
   accountApiKey: GqAccountApiKey;
 };
+
+export type GqUpdateAccountDetailsInput = {
+  /** The identifier for the account which should be updated. */
+  accountId: Scalars["Uuid"];
+  /** An updated profile image url for the account. Optional. */
+  profileImageUrl: Maybe<Scalars["String"]>;
+};
+
+export type GqUpdateAccountDetailsPayload = {
+  __typename?: "UpdateAccountDetailsPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+export type GqUpdateAccountMemInboxDetailsInput = {
+  /** The identifier for the target mem. */
+  memId: Scalars["Uuid"];
+  /** The identifier for the target account. */
+  accountId: Scalars["Uuid"];
+  /** Boolean that marks whether the inbox item is unread. */
+  isUnread: Maybe<Scalars["Boolean"]>;
+  /** State of the mem in the account inbox (archived, snoozed, etc.) */
+  inboxState: Maybe<GqAccountMemInboxStateInput>;
+  /** Subscription level between the account and mem (muted, etc.) */
+  subscriptionLevel: Maybe<GqAccountMemInboxSubscriptionLevelInput>;
+};
+
+export type GqUpdateAccountMemInboxDetailsPayload = {
+  __typename?: "UpdateAccountMemInboxDetailsPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+export type GqUpdateAccountPreferenceRecordMemInteractionLocationPolicyInput = {
+  /** The new value for the location policy. */
+  enabled: Scalars["Boolean"];
+};
+
+export type GqUpdateAccountPreferencesInput = {
+  /** The identifier for the account which should be updated. */
+  accountId: Scalars["Uuid"];
+  /** Updates for the `recordMemInteractionLocationPolicy` preference. Optional. */
+  recordMemInteractionLocationPolicy: Maybe<GqUpdateAccountPreferenceRecordMemInteractionLocationPolicyInput>;
+};
+
+export type GqUpdateAccountPreferencesPayload = {
+  __typename?: "UpdateAccountPreferencesPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The updated account. */
+  account: GqAccount;
+};
+
+export type GqUploadFileInput = {
+  /** The file. */
+  file: Scalars["Upload"];
+};
+
+export type GqUploadFilePayload = {
+  __typename?: "UploadFilePayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The uploaded file. */
+  uploadedFile: GqUploadedFile;
+};
+
+export type GqUploadedFile = {
+  __typename?: "UploadedFile";
+  /** The url of the uploaded file. */
+  fileUrl: Scalars["String"];
+};
+
+/** Details about the showcase app notification. */
+export type GqVersionLaunchShowcaseAppNotificationDetails = {
+  /** The title of the app notification, located at the top of the notification. */
+  title: Scalars["String"];
+  /** The secondary label of the app notification, located below the title. */
+  text: Scalars["String"];
+  /** The noteId of the showcase note for the version launch. */
+  showcaseNoteId: Scalars["String"];
+};
+
+/** A Workspace. */
+export type GqWorkspace = GqNode & {
+  __typename?: "Workspace";
+  /** The unique identifier of the entity. */
+  id: Scalars["Uuid"];
+  /** The name of the workspace. */
+  name: Scalars["String"];
+  /** Associated accounts. */
+  workspaceAccounts: Array<GqWorkspaceAccount>;
+};
+
+/** A WorkspaceAccount. */
+export type GqWorkspaceAccount = GqNode & {
+  __typename?: "WorkspaceAccount";
+  /** The unique identifier of the entity. */
+  id: Scalars["Uuid"];
+  /** The associated workspace. */
+  workspace: GqWorkspace;
+  /** The associated account. */
+  account: GqAccount;
+  /** The role of the account within the workspace. */
+  role: GqAccountWorkspaceRoleKind;
+};
+
+export type GqWorkspaceLimitOffsetConnection = {
+  __typename?: "WorkspaceLimitOffsetConnection";
+  /** A list of nodes. */
+  nodes: Array<GqWorkspace>;
+  /** Information to aid in pagination. */
+  pageInfo: GqLimitOffsetPageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars["Int"];
+};
+
+export type GqInternalArchiveAccountInput = {
+  /** The id of the target firestore-account. */
+  firestoreUserId: Scalars["String"];
+};
+
+export type GqInternalArchiveAccountPayload = {
+  __typename?: "internalArchiveAccountPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The id of the account which was archived. */
+  accountId: Scalars["Uuid"];
+};
+
+export type GqInternalArchiveMemInput = {
+  /** The id of the target firestore-note. */
+  firestoreNoteId: Scalars["String"];
+};
+
+export type GqInternalArchiveMemPayload = {
+  __typename?: "internalArchiveMemPayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The id of the mem which was archived. */
+  memId: Scalars["Uuid"];
+};
+
+export type GqInternalUpdateMemTrashStateInput = {
+  /** The id of the target firestore-note. */
+  firestoreNoteId: Scalars["String"];
+  /** The array of userId's that have the target firestore-note in their trash. */
+  isInTrashForUsers: Array<Scalars["String"]>;
+};
+
+export type GqInternalUpdateMemTrashStatePayload = {
+  __typename?: "internalUpdateMemTrashStatePayload";
+  /** Whether the operation was successful. */
+  success: Scalars["Boolean"];
+  /** The id of the mem that was updated. */
+  memId: Scalars["Uuid"];
+};
+
+export type GqRecommendedSavedToMemItem = GqMem;
 
 export type GqBatchCreateMemsMutationVariables = Exact<{
   inputs: Array<GqCreateMemInput> | GqCreateMemInput;

@@ -87,6 +87,7 @@ describe("MemClient", () => {
         isArchived: true,
         createdAt: new Date("July 1, 1867").toISOString(),
         scheduledFor: new Date("March 7, 2511").toISOString(),
+        memId: "10000000-0000-4000-a000-000000000000",
       });
 
       expect(result).toMatchObject({
@@ -146,6 +147,7 @@ describe("MemClient", () => {
           isArchived: true,
           createdAt: new Date("July 1, 1867").toISOString(),
           scheduledFor: new Date("March 7, 2511").toISOString(),
+          memId: "10000000-0000-4000-a000-000000000000",
         },
         {
           content: "def",
@@ -153,6 +155,7 @@ describe("MemClient", () => {
           isArchived: false,
           createdAt: new Date("July 4, 1776").toISOString(),
           scheduledFor: new Date("October 27, 2560").toISOString(),
+          memId: "20000000-0000-4000-a000-000000000000",
         },
       ]);
 
