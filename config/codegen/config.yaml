@@ -25,6 +25,12 @@ generates:
         Uuid: "../../utils/graphql/types#UuidScalar"
         Cursor: "../../utils/graphql/types#CursorScalar"
         DateTime: "../../utils/graphql/types#DateTimeScalar"
+        Color: "../../utils/graphql/types#ColorScalar"
+        AnyJsonObject: "../../utils/graphql/types#AnyJsonObjectScalar"
+        AnyJsonValue: "../../utils/graphql/types#AnyJsonValueScalar"
+        RichTextDocument: "../../utils/graphql/types#RichTextDocumentScalar"
+        RichTextDelta: "../../utils/graphql/types#RichTextDeltaScalar"
+        Upload: "../../utils/graphql/types#UploadScalar"
 
 hooks:
   afterAllFileWrite:
